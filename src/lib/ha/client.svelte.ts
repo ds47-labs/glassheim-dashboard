@@ -112,9 +112,9 @@ class HaClient {
   return entity.state;
   }
 
-  getNumericState(entityId: string, fallback = '--'): string {
+  getNumericState(entityId: string, fallback = '--', decimals = 1): string {
   const val = parseFloat(this.getEntity(entityId)?.state ?? '');
-  return isNaN(val) ? fallback : String(val);
+  return isNaN(val) ? fallback : val.toFixed(decimals);
   }
 
   private send(msg: Record<string, unknown>) {
