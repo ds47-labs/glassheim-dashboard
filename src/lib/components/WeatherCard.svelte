@@ -25,7 +25,7 @@
 	};
 </script>
 
-<div class="backdrop-blur-2xl bg-white/10 rounded-3xl p-16 border border-white/20 shadow-2xl max-w-[1600px] mx-auto">
+<div class="backdrop-blur-2xl bg-white/10 rounded-3xl p-16 border border-white/20 shadow-2xl">
 	<div class="flex items-start justify-between gap-12">
 		
 		<div class="flex-1">
@@ -39,7 +39,7 @@
 			<div class="text-2xl font-light tracking-wide text-white/90">Light Rain Showers</div>
 		</div>
 
-		<div class="flex gap-4 self-center">
+		<div class="flex gap-4 items-center">
 			{#each forecast as data (data.day)}
 				{@const Icon = iconMap[data.icon] || CloudSun}
 				<div class="flex w-28 flex-col items-center gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">

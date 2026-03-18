@@ -15,7 +15,7 @@
   ];
 </script>
 
-<header class="flex items-center justify-between px-16 py-6">
+<header class="flex items-center justify-between px-16 py-8">
   <div class="text-white text-xl font-light tracking-wider">
     HAMAVIL.
   </div>

@@ -10,15 +10,15 @@
 	let activeTab = $state('Weather');
 </script>
 
-<div style:background-image="url({background})" class="min-h-screen w-full bg-cover bg-center bg-no-repeat">
-	<div class="min-h-screen w-full bg-black/30">
+<div style:background-image="url({background})" class="h-screen w-full bg-cover bg-center bg-no-repeat overflow-hidden">
+	<div class="h-full w-full bg-black/30 flex flex-col">
 		<Header activeTab={activeTab} />
 
-		<main class="px-8 py-12 space-y-8 max-w-[1800px] mx-auto">
+		<main class="flex-1 px-16 py-8 flex flex-col gap-6 justify-center">
 			<WeatherCard />
-			
+
 			<!-- Bottom Stats -->
-			<div class="flex gap-6">
+			<div class="flex gap-6 shrink-0">
 				<StatCard
 					icon={Droplets}
 					title="Precipitation"
