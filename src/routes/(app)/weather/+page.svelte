@@ -27,6 +27,18 @@
   'hail':             { icon: CloudRain,        label: 'Hagel' },
   };
 
+  const uvLevels = [
+    { min: 1,  max: 2,    label: 'Low'       },
+    { min: 3,  max: 5,    label: 'Moderate'  },
+    { min: 6,  max: 7,    label: 'High'      },
+    { min: 8,  max: 10,   label: 'Very High' },
+    { min: 11, max: null, label: 'Extreme'   },
+  ] as const;
+
+  function uvLevel(uv: number) {
+    return uvLevels.find(l => uv >= l.min && (l.max === null || uv <= l.max)) ?? null;
+  }
+
   const forecast: ForecastDay[] = [
   { day: 'MON', icon: Cloud,     high: 18, low: 12, description: 'Cloudy' },
   { day: 'DIE', icon: Sun,       high: 18, low: 12, description: 'Sunny' },
@@ -39,6 +51,9 @@
   let feelsLike = $derived(ha.getNumericState('sensor.gw2000a_feels_like_temperature'));
   let pressure = $derived(ha.getNumericState('sensor.gw2000a_absolute_pressure'));
   let windSpeed = $derived(ha.getNumericState('sensor.wind_speed_10min_avg'));
+
+  let uv = $derived(parseFloat(ha.getState('sensor.gw2000a_uv_index', '0')));
+  let currentUvLevel = $derived(uvLevel(uv));
 
   let windDir = $derived.by(() => {
   const deg = parseFloat(ha.getState('sensor.gw2000a_wind_direction_10m_avg'));
@@ -80,12 +95,12 @@
   />
 
   <StatCard
-  icon={Sun}
-  title="Sun & UV"
-  stats={[
-  { label: 'UV Index', value: '3 (Moderate)' },
-  { label: 'Sunrise', value: '06:15' },
-  { label: 'Sunset', value: '19:45' }
-  ]}
+    icon={Sun}
+    title="Sun & UV"
+    stats={[
+      { label: 'UV Index', value: currentUvLevel ? `${uv} (${currentUvLevel.label})` : `${uv}` },
+      { label: 'Sunrise', value: '06:15' },
+      { label: 'Sunset', value: '19:45' }
+    ]}
   />
 </div>
