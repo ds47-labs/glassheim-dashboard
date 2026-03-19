@@ -1,12 +1,12 @@
 <script lang="ts">
-  import Icon from '@iconify/svelte';
-  
+  import type { Icon } from 'lucide-svelte';
+
   let {
-    icon,
+    icon: IconComponent,
     title,
     stats
   }: {
-    icon: string,
+    icon: typeof Icon,
     title: string,
     stats: Array<{ label: string; value: string }>
   } = $props();
@@ -14,9 +14,9 @@
 
 <div class="glass-panel min-h-64 rounded-3xl border border-white/15 bg-white/5 p-10 backdrop-blur-3xl shadow-xl transition-all hover:bg-white/10 flex items-center justify-center">
   <div class="flex items-start gap-6">
-    <div class="text-white/70 mt-1 w-12 h-12 [&>svg]:w-full [&>svg]:h-full [&>svg]:stroke-1">
-      {#if icon}
-      <Icon {icon} />
+    <div class="text-white/70 mt-1">
+      {#if IconComponent}
+      <IconComponent size={48} strokeWidth={1} />
       {/if}
     </div>
     

@@ -1,9 +1,9 @@
 <script lang="ts">
-  import Icon from '@iconify/svelte';
+  import type { Icon } from 'lucide-svelte';
 
   export interface ForecastDay {
     day: string;
-    icon: string;
+    icon: typeof Icon;
     high: number;
     low: number;
     description: string;
@@ -12,13 +12,13 @@
   let {
     temperature,
     condition,
-    conditionIcon = 'lucide:cloud-sun',
+    conditionIcon: ConditionIcon,
     feelsLike,
     forecast
   }: {
     temperature: string;
     condition: string;
-    conditionIcon?: string;
+    conditionIcon?: typeof Icon;
     feelsLike: string;
     forecast: ForecastDay[];
   } = $props();
@@ -30,7 +30,9 @@
     <div class="flex-1">
       <div class="text-white/80 mb-6 uppercase">AIR QUALITY - POOR</div>
       <div class="flex items-center gap-8 mb-8">
-          <Icon icon={conditionIcon} class="w-36 h-36 text-white" />
+        {#if ConditionIcon}
+          <ConditionIcon strokeWidth={1} class="w-36 h-36 text-white" />
+        {/if}
         <div class="flex flex-col">
           <div class="text-9xl font-extralight leading-none tracking-tighter text-white tabular-nums">
             {temperature}<span class="text-5xl text-white/90 align-top inline-block mt-2">°C</span>
@@ -43,11 +45,12 @@
 
     <div class="flex gap-4 items-center shrink-0">
       {#each forecast as data (data.day)}
+        {@const ForecastIcon = data.icon}
         <div class="flex w-30 flex-col items-center gap-4 rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
           <div class="text-sm font-bold tracking-widest text-white/50 uppercase">{data.day}</div>
 
-          <div class="text-white/90 w-12 h-12 [&>svg]:w-full [&>svg]:h-full [&>svg]:stroke-1">
-            <Icon icon={data.icon} />
+          <div class="text-white/90">
+            <ForecastIcon size={48} strokeWidth={1} />
           </div>
 
           <div class="text-md font-medium text-white tabular-nums">

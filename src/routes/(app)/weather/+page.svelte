@@ -2,32 +2,37 @@
   import { ha } from '$lib/ha/client.svelte';
   import WeatherCard, { type ForecastDay } from '$lib/components/WeatherCard.svelte';
   import StatCard from '$lib/components/StatCard.svelte';
+  import {
+    Sun, Moon, CloudSun, Cloud, CloudRain, CloudLightning, CloudSnow, Wind,
+    Droplets
+  } from 'lucide-svelte';
+  import type { Icon } from 'lucide-svelte';
 
   const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
 
-  const haConditionMap: Record<string, { icon: string; label: string }> = {
-  'sunny':            { icon: 'lucide:sun',              label: 'Sonnig' },
-  'clear-night':      { icon: 'lucide:moon',             label: 'Klar' },
-  'partlycloudy':     { icon: 'lucide:cloud-sun',        label: 'Bewölkt' },
-  'cloudy':           { icon: 'lucide:cloud',            label: 'Überwiegend bewölkt' },
-  'rainy':            { icon: 'lucide:cloud-rain',       label: 'Regnerisch' },
-  'pouring':          { icon: 'lucide:cloud-rain',       label: 'Regen' },
-  'lightning':        { icon: 'lucide:cloud-lightning',  label: 'Gewitter' },
-  'lightning-rainy':  { icon: 'lucide:cloud-lightning',  label: 'Gewitter' },
-  'snowy':            { icon: 'lucide:cloud-snow',       label: 'Schnee' },
-  'snowy-rainy':      { icon: 'lucide:cloud-snow',       label: 'Glatteis' },
-  'windy':            { icon: 'lucide:wind',             label: 'Windig' },
-  'windy-variant':    { icon: 'lucide:wind',             label: 'Windig' },
-  'fog':              { icon: 'lucide:cloud',            label: 'Nebel' },
-  'hail':             { icon: 'lucide:cloud-rain',       label: 'Hagel' },
+  const haConditionMap: Record<string, { icon: typeof Icon; label: string }> = {
+  'sunny':            { icon: Sun,              label: 'Sonnig' },
+  'clear-night':      { icon: Moon,             label: 'Klar' },
+  'partlycloudy':     { icon: CloudSun,         label: 'Bewölkt' },
+  'cloudy':           { icon: Cloud,            label: 'Überwiegend bewölkt' },
+  'rainy':            { icon: CloudRain,        label: 'Regnerisch' },
+  'pouring':          { icon: CloudRain,        label: 'Regen' },
+  'lightning':        { icon: CloudLightning,   label: 'Gewitter' },
+  'lightning-rainy':  { icon: CloudLightning,   label: 'Gewitter' },
+  'snowy':            { icon: CloudSnow,        label: 'Schnee' },
+  'snowy-rainy':      { icon: CloudSnow,        label: 'Glatteis' },
+  'windy':            { icon: Wind,             label: 'Windig' },
+  'windy-variant':    { icon: Wind,             label: 'Windig' },
+  'fog':              { icon: Cloud,            label: 'Nebel' },
+  'hail':             { icon: CloudRain,        label: 'Hagel' },
   };
 
   const forecast: ForecastDay[] = [
-  { day: 'MON', icon: 'lucide:cloud',     high: 18, low: 12, description: 'Cloudy' },
-  { day: 'DIE', icon: 'lucide:sun',       high: 18, low: 12, description: 'Sunny' },
-  { day: 'MIT', icon: 'lucide:sun',       high: 16, low: 12, description: 'Cloudy' },
-  { day: 'DON', icon: 'lucide:cloud-rain',high: 18, low: 12, description: 'Cloudy' },
-  { day: 'FRI', icon: 'lucide:sun',       high: 16, low: 12, description: 'Sunny' }
+  { day: 'MON', icon: Cloud,     high: 18, low: 12, description: 'Cloudy' },
+  { day: 'DIE', icon: Sun,       high: 18, low: 12, description: 'Sunny' },
+  { day: 'MIT', icon: Sun,       high: 16, low: 12, description: 'Cloudy' },
+  { day: 'DON', icon: CloudRain, high: 18, low: 12, description: 'Cloudy' },
+  { day: 'FRI', icon: Sun,       high: 16, low: 12, description: 'Sunny' }
   ];
 
   let temperature = $derived(ha.getNumericState('sensor.gw2000a_outdoor_temperature'));
@@ -43,7 +48,7 @@
 
   let weatherCondition = $derived.by(() => {
   const state = ha.getState('sensor.openweathermap_condition');
-  return haConditionMap[state] ?? { icon: 'lucide:cloud-sun', label: state };
+  return haConditionMap[state] ?? { icon: CloudSun, label: state };
   });
 </script>
 
@@ -57,7 +62,7 @@
 
 <div class="grid grid-cols-3 gap-6 shrink-0">
   <StatCard
-  icon="lucide:droplets"
+  icon={Droplets}
   title="Precipitation"
   stats={[
   { label: 'Chance of Rain', value: '60%' },
@@ -66,7 +71,7 @@
   />
 
   <StatCard
-  icon="lucide:wind"
+  icon={Wind}
   title="Wind & Druck"
   stats={[
   { label: 'Wind', value: `${windSpeed} km/h ${windDir}` },
@@ -75,7 +80,7 @@
   />
 
   <StatCard
-  icon="lucide:sun"
+  icon={Sun}
   title="Sun & UV"
   stats={[
   { label: 'UV Index', value: '3 (Moderate)' },
