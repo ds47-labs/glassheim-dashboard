@@ -15,7 +15,6 @@
     Car,
     LockOpen,
     DoorOpen,
-    TriangleAlert,
     X
   } from 'lucide-svelte';
   import type { Icon } from 'lucide-svelte';
