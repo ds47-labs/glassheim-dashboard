@@ -12,12 +12,8 @@ ENV BUILD_VERSION=$BUILD_VERSION
 RUN pnpm build
 
 
-FROM gcr.io/distroless/nodejs22-debian12
+FROM nginx:alpine
 
-WORKDIR /app
-COPY --from=builder /app/build ./build
+COPY --from=builder /app/build /usr/share/nginx/html
 
-EXPOSE 3000
-ENV HOST=0.0.0.0 PORT=3000
-
-CMD ["build"]
+EXPOSE 80

@@ -19,10 +19,7 @@
 </script>
 
 <header class="flex items-center justify-between px-16 py-10">
-	<div class="shrink-0 flex items-baseline gap-3">
-		<span class="text-4xl font-light tracking-wider text-white">HAMAVIL.</span>
-		<span class="font-mono text-xs text-white/20">{__BUILD_VERSION__}</span>
-	</div>
+	<div class="shrink-0 text-4xl font-light tracking-wider text-white">HAMAVIL.</div>
 
 	<nav class="flex items-center gap-6">
 		{#each navItems as item, i (item.label)}

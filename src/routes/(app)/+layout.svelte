@@ -12,6 +12,9 @@
   <main class="flex-1 px-16 pt-8 pb-24 flex flex-col gap-6 justify-center overflow-hidden">
   {@render children()}
   </main>
+  <div class="px-8 pb-1">
+    <span class="font-mono text-xs text-white/15">{__BUILD_VERSION__}</span>
+  </div>
   <StatusBar />
   </div>
 </div>

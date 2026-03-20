@@ -13,7 +13,7 @@ push: build
 	docker push $(IMAGE):latest
 
 run:
-	docker run --rm -p 3000:3000 $(IMAGE):latest
+	docker run --rm -p 80:80 $(IMAGE):latest
 
 dev-build:
 	docker build -f Dockerfile.dev -t glasheim-dashboard:dev .
