@@ -37,13 +37,13 @@
           <div class="text-9xl font-extralight leading-none tracking-tighter text-white tabular-nums">
             {temperature}<span class="text-5xl text-white/90 align-top inline-block mt-2">°C</span>
           </div>
-          <div class="text-white/80 mt-2 ml-2 uppercase text-sm tracking-widest tabular-nums">Feels like {feelsLike}°C</div>
+          <div class="text-white/80 mt-2 ml-2 uppercase text-sm tracking-widest tabular-nums">Gefühlt {feelsLike}°C</div>
         </div>
       </div>
       <div class="text-2xl font-light tracking-wide text-white/90">{condition}</div>
     </div>
 
-    <div class="flex gap-4 items-center shrink-0">
+    <div class="flex gap-4 items-stretch shrink-0">
       {#each forecast as data (data.day)}
         {@const ForecastIcon = data.icon}
         <div class="flex w-30 flex-col items-center gap-4 rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">

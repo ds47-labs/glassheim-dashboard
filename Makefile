@@ -6,7 +6,7 @@ VERSION  := $(shell git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' ||
 .PHONY: build push run dev login dev-build
 
 build:
-	docker build -t $(IMAGE):$(VERSION) -t $(IMAGE):latest .
+	docker build --build-arg BUILD_VERSION=$(VERSION) -t $(IMAGE):$(VERSION) -t $(IMAGE):latest .
 
 push: build
 	docker push $(IMAGE):$(VERSION)

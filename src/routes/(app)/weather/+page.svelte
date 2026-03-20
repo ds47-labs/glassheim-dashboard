@@ -4,7 +4,7 @@
   import StatCard from '$lib/components/StatCard.svelte';
   import {
     Sun, Moon, CloudSun, Cloud, CloudRain, CloudLightning, CloudSnow, Wind,
-    Droplets
+    Droplets, Sunrise, Sunset
   } from 'lucide-svelte';
   import type { Icon } from 'lucide-svelte';
 
@@ -28,24 +28,35 @@
   };
 
   const uvLevels = [
-    { min: 1,  max: 2,    label: 'Low'       },
-    { min: 3,  max: 5,    label: 'Moderate'  },
-    { min: 6,  max: 7,    label: 'High'      },
-    { min: 8,  max: 10,   label: 'Very High' },
-    { min: 11, max: null, label: 'Extreme'   },
+    { min: 1,  max: 2,    label: 'Niedrig'       },
+    { min: 3,  max: 5,    label: 'Mittel'  },
+    { min: 6,  max: 7,    label: 'Hoch'      },
+    { min: 8,  max: 10,   label: 'Sehr hoch' },
+    { min: 11, max: null, label: 'Extrem'   },
   ] as const;
 
   function uvLevel(uv: number) {
     return uvLevels.find(l => uv >= l.min && (l.max === null || uv <= l.max)) ?? null;
   }
 
-  const forecast: ForecastDay[] = [
-  { day: 'MON', icon: Cloud,     high: 18, low: 12, description: 'Cloudy' },
-  { day: 'DIE', icon: Sun,       high: 18, low: 12, description: 'Sunny' },
-  { day: 'MIT', icon: Sun,       high: 16, low: 12, description: 'Cloudy' },
-  { day: 'DON', icon: CloudRain, high: 18, low: 12, description: 'Cloudy' },
-  { day: 'FRI', icon: Sun,       high: 16, low: 12, description: 'Sunny' }
-  ];
+  let forecast = $derived.by<ForecastDay[]>(() => {
+    const raw = ha.getEntity('sensor.daily_weather_data_openweathermap')?.attributes?.forecast_data as Record<string, unknown>[] | undefined;
+    if (!raw?.length) 
+      return [];
+    
+    return raw.slice(0, 5).map(d => {
+      const condition = haConditionMap[d.condition as string] ?? haConditionMap['partlycloudy'];
+      const date = new Date(d.datetime as string);
+      const day = date.toLocaleDateString('de-DE', { weekday: 'short' }).toUpperCase().replace('.', '');
+      return {
+        day,
+        icon: condition.icon,
+        high: Math.round(d.temperature as number),
+        low:  Math.round(d.templow as number),
+        description: condition.label,
+      };
+    });
+  });
 
   let temperature = $derived(ha.getNumericState('sensor.gw2000a_outdoor_temperature'));
   let feelsLike = $derived(ha.getNumericState('sensor.gw2000a_feels_like_temperature'));
@@ -54,6 +65,21 @@
 
   let uv = $derived(parseFloat(ha.getState('sensor.gw2000a_uv_index', '0')));
   let currentUvLevel = $derived(uvLevel(uv));
+
+  function fmtTime(iso: string | undefined): string {
+    if (!iso) return '--';
+    return new Date(iso).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  let sunAttrs    = $derived(ha.getEntity('sun.sun')?.attributes as Record<string, string> | undefined);
+  let sunrise     = $derived(fmtTime(sunAttrs?.next_rising));
+  let sunset      = $derived(fmtTime(sunAttrs?.next_setting));
+
+  let todayForecast = $derived(
+    (ha.getEntity('sensor.daily_weather_data_openweathermap')?.attributes?.forecast_data as Record<string, unknown>[] | undefined)?.[0]
+  );
+  let rainProb   = $derived(todayForecast ? `${Math.round(todayForecast.precipitation_probability as number)}%` : '--');
+  let rainAmount = $derived(todayForecast ? `${(todayForecast.precipitation as number).toFixed(1)} mm` : '--');
 
   let windDir = $derived.by(() => {
   const deg = parseFloat(ha.getState('sensor.gw2000a_wind_direction_10m_avg'));
@@ -77,30 +103,29 @@
 
 <div class="grid grid-cols-3 gap-6 shrink-0">
   <StatCard
-  icon={Droplets}
-  title="Precipitation"
-  stats={[
-  { label: 'Chance of Rain', value: '60%' },
-  { label: 'Total', value: '5mm' }
-  ]}
+    icon={Droplets}
+    title="Niederschlag"
+    stats={[
+      { label: 'Wahrscheinlichkeit', value: rainProb },
+      { label: 'Menge', value: rainAmount },
+    ]}
   />
 
   <StatCard
-  icon={Wind}
-  title="Wind & Druck"
-  stats={[
-  { label: 'Wind', value: `${windSpeed} km/h ${windDir}` },
-  { label: 'Druck', value: `${pressure} hPa` }
-  ]}
+    icon={Wind}
+    title="Wind & Druck"
+    stats={[
+      { label: 'Wind', value: `${windSpeed} km/h ${windDir}` },
+      { label: 'Druck', value: `${pressure} hPa` },
+    ]}
   />
 
   <StatCard
     icon={Sun}
-    title="Sun & UV"
+    title="Sonne & UV"
     stats={[
       { label: 'UV Index', value: currentUvLevel ? `${uv} (${currentUvLevel.label})` : `${uv}` },
-      { label: 'Sunrise', value: '06:15' },
-      { label: 'Sunset', value: '19:45' }
+      { label: Sunrise, value: sunrise, label2: Sunset, value2: sunset },
     ]}
   />
 </div>

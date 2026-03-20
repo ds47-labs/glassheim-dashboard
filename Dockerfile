@@ -7,6 +7,8 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 COPY . .
+ARG BUILD_VERSION=unknown
+ENV BUILD_VERSION=$BUILD_VERSION
 RUN pnpm build
 
 
