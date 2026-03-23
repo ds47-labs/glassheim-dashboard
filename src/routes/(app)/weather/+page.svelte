@@ -4,18 +4,37 @@
   import StatCard from '$lib/components/StatCard.svelte';
   import { Sun, Wind, Droplets, Flower2, Navigation } from 'lucide-svelte';
 
-  const directions = [
-    'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
-    'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'
-  ];
-
   const uvLevels = [
     { min: 0, max: 0, label: 'Keine', color: 'text-white/35', accentRgba: 'rgba(148,163,184,0.7)' },
-    { min: 1, max: 2, label: 'Niedrig', color: 'text-green-400', accentRgba: 'rgba(74,222,128,0.8)' },
-    { min: 3, max: 5, label: 'Mittel', color: 'text-yellow-400', accentRgba: 'rgba(250,204,21,0.8)' },
+    {
+      min: 1,
+      max: 2,
+      label: 'Niedrig',
+      color: 'text-green-400',
+      accentRgba: 'rgba(74,222,128,0.8)'
+    },
+    {
+      min: 3,
+      max: 5,
+      label: 'Mittel',
+      color: 'text-yellow-400',
+      accentRgba: 'rgba(250,204,21,0.8)'
+    },
     { min: 6, max: 7, label: 'Hoch', color: 'text-orange-400', accentRgba: 'rgba(251,146,60,0.8)' },
-    { min: 8, max: 10, label: 'Sehr hoch', color: 'text-red-400', accentRgba: 'rgba(248,113,113,0.8)' },
-    { min: 11, max: null, label: 'Extrem', color: 'text-red-500', accentRgba: 'rgba(239,68,68,0.9)' }
+    {
+      min: 8,
+      max: 10,
+      label: 'Sehr hoch',
+      color: 'text-red-400',
+      accentRgba: 'rgba(248,113,113,0.8)'
+    },
+    {
+      min: 11,
+      max: null,
+      label: 'Extrem',
+      color: 'text-red-500',
+      accentRgba: 'rgba(239,68,68,0.9)'
+    }
   ] as const;
 
   function uvLevel(uv: number) {
@@ -27,20 +46,12 @@
     return new Date(iso).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   }
 
-  // Niederschlag
-  let todayForecast = $derived(
-    (
-      ha.getEntity('sensor.daily_weather_data_openweathermap')?.attributes?.forecast_data as
-        | Record<string, unknown>[]
-        | undefined
-    )?.[0]
-  );
-  let rainProb = $derived(Math.round(todayForecast?.precipitation_probability as number));
-  let rainAmount = $derived(ha.getState('sensor.gw2000a_daily_rain_piezo') ?? '--');
+  let actualRainRate = $derived(ha.getState('sensor.gw2000a_rain_rate_piezo') ?? '--');
+  let isRaining = $derived(ha.getState('binary_sensor.gw2000a_rain_state_piezo'));
+  let dailyRainRate = $derived(ha.getState('sensor.gw2000a_daily_rain_piezo') ?? '--');
   let humidity = $derived(ha.getNumericState('sensor.gw2000a_outdoor_humidity', 0) ?? '--');
   let dewPoint = $derived(ha.getNumericState('sensor.gw2000a_dew_point') ?? '--');
 
-  // Wind & Druck
   let pressure = $derived(ha.getNumericState('sensor.gw2000a_absolute_pressure') ?? '--');
   let windSpeed = $derived(ha.getNumericState('sensor.wind_speed_10min_avg') ?? '--');
   let windGust = $derived(ha.getNumericState('sensor.gw2000a_wind_gust') ?? '--');
@@ -48,11 +59,7 @@
     const deg = parseFloat(ha.getState('sensor.gw2000a_wind_direction_10m_avg') ?? '');
     return isNaN(deg) ? null : deg;
   });
-  let windDir = $derived(
-    windDeg !== null ? directions[Math.round(windDeg / 22.5) % 16] : '--'
-  );
 
-  // Sonne & UV
   let uv = $derived(parseFloat(ha.getNumericState('sensor.gw2000a_uv_index', 0) ?? '0'));
   let currentUvLevel = $derived(uvLevel(uv));
   let sunAttrs = $derived(
@@ -61,7 +68,6 @@
   let sunrise = $derived(fmtTime(sunAttrs?.next_rising));
   let sunset = $derived(fmtTime(sunAttrs?.next_setting));
 
-  // Pollen
   const pollenSensors: { sensor: string; name: string }[] = [
     { sensor: 'sensor.polleninformation_hamavil_alder', name: 'Erle' },
     { sensor: 'sensor.polleninformation_hamavil_birch', name: 'Birke' },
@@ -97,7 +103,6 @@
     return 'text-white/40';
   }
 
-  // Pollen hero: total active count + name of the highest one
   let pollenActive = $derived(pollen.length);
   let pollenTopName = $derived(pollen[0]?.name ?? '');
   let pollenHeroUnit = $derived.by(() => {
@@ -106,15 +111,18 @@
     return `aktiv · ${pollenTopName}`;
   });
   let pollenHeroAccentColor = $derived(
-    pollen.length === 0 ? 'rgba(74,222,128,0.7)' :
-    pollen[0]?.level >= 4 ? 'rgba(248,113,113,0.8)' :
-    pollen[0]?.level >= 3 ? 'rgba(251,191,36,0.8)' :
-    pollen[0]?.level >= 2 ? 'rgba(250,204,21,0.7)' :
-    'rgba(74,222,128,0.7)'
+    pollen.length === 0
+      ? 'rgba(74,222,128,0.7)'
+      : pollen[0]?.level >= 4
+        ? 'rgba(248,113,113,0.8)'
+        : pollen[0]?.level >= 3
+          ? 'rgba(251,191,36,0.8)'
+          : pollen[0]?.level >= 2
+            ? 'rgba(250,204,21,0.7)'
+            : 'rgba(74,222,128,0.7)'
   );
   let pollenHeroTextColor = $derived(
-    pollen.length === 0 ? 'text-white/35' :
-    levelColor(pollen[0]?.level ?? 0)
+    pollen.length === 0 ? 'text-white/35' : levelColor(pollen[0]?.level ?? 0)
   );
 </script>
 
@@ -126,10 +134,10 @@
       icon={Droplets}
       title="Niederschlag"
       accentColor="rgba(96,165,250,0.8)"
-      hero={`${rainProb}`}
-      heroUnit="%"
+      hero={`${actualRainRate}`}
+      heroUnit={isRaining === 'on' ? 'mm' : 'Keiner'}
       stats={[
-        { label: 'Tagesmenge', value: `${rainAmount} mm` },
+        { label: 'Tagesmenge', value: `${dailyRainRate} mm` },
         { label: 'Luftfeuchtigkeit', value: `${humidity} %` },
         { label: 'Taupunkt', value: `${dewPoint} °C` }
       ]}
@@ -142,7 +150,7 @@
       title="Wind & Druck"
       accentColor="rgba(148,163,184,0.8)"
       hero={windSpeed}
-      heroUnit={`km/h ${windDir}`}
+      heroUnit="km/h"
       heroIcon={Navigation}
       heroIconRotation={windDeg !== null ? windDeg + 180 : undefined}
       stats={[

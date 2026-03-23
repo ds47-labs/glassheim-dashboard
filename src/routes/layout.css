@@ -47,7 +47,7 @@
 
   /* Dashboard accent */
   --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-bg: rgba(255, 255, 255, 0.08);
   --glass-bg-hover: rgba(255, 255, 255, 0.06);
   --glass-highlight: rgba(255, 255, 255, 0.1);
   --accent-warm: oklch(0.82 0.08 80);
@@ -193,7 +193,7 @@
 
 /* Glass panel base style */
 .glass-panel {
-  background: var(--glass-bg);
+  background: rgba(255, 255, 255, 0.08);
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(48px);
   -webkit-backdrop-filter: blur(48px);
@@ -253,7 +253,8 @@
 
 /* Touch-friendly tap targets for wall panel */
 @media (pointer: coarse) {
-  button, a {
+  button,
+  a {
     min-height: 44px;
     min-width: 44px;
   }

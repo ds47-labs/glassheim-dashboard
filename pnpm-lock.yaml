@@ -75,6 +75,9 @@ importers:
       svelte-check:
         specifier: ^4.4.2
         version: 4.4.5(picomatch@4.0.3)(svelte@5.53.12)(typescript@5.9.3)
+      svelte-reactive-preprocessor:
+        specifier: ^0.8.3
+        version: 0.8.3
       tailwindcss:
         specifier: ^4.1.18
         version: 4.2.1
@@ -1058,6 +1061,9 @@ packages:
   json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
 
+  json-stringify-safe@5.0.1:
+    resolution: {integrity: sha512-ZClg6AaYvamvYEE82d3Iyd3vSSIjQ+odgjaTzRuO3s7toCdFKczob2i0zCh7JE8kWn17yvAWhUVxvqGwUalsRA==}
+
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
@@ -1150,6 +1156,9 @@ packages:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
     engines: {node: '>=10'}
 
+  linenumber@1.0.1:
+    resolution: {integrity: sha512-g7x+bxzGaJ7yUk1chFXmY4NT1oIiSQREUs33M29cjDPFUP1W/dlM3YGD1cR7qeSehp5TEpxAFP0L+Rpk3nUKzw==}
+
   locate-character@3.0.0:
     resolution: {integrity: sha512-SW13ws7BjaeJ6p7Q6CO2nchbYEc3X3J6WrmTTDto7yMPqVSZTUyY5Tjbid+Ab8gLnATtygYtiDIJGQRRn2ZOiA==}
 
@@ -1223,6 +1232,9 @@ packages:
 
   path-parse@1.0.7:
     resolution: {integrity: sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==}
+
+  periscopic@2.0.3:
+    resolution: {integrity: sha512-FuCZe61mWxQOJAQFEfmt9FjzebRlcpFz8sFPbyaCKtdusPkMEbA9ey0eARnRav5zAhmXznhaQkKGFAPn7X9NUw==}
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
@@ -1415,6 +1427,9 @@ packages:
     peerDependenciesMeta:
       svelte:
         optional: true
+
+  svelte-reactive-preprocessor@0.8.3:
+    resolution: {integrity: sha512-OZRorkMbIdrHfnvAYrY7brEUW6QOesh0TiIvQy2RQHly2hrvwhZbrH8Ec9KnAVcx9cCYVox26GqsHcLtVkud3g==}
 
   svelte@5.53.12:
     resolution: {integrity: sha512-4x/uk4rQe/d7RhfvS8wemTfNjQ0bJbKvamIzRBfTe2eHHjzBZ7PZicUQrC2ryj83xxEacfA1zHKd1ephD1tAxA==}
@@ -2366,6 +2381,8 @@ snapshots:
 
   json-stable-stringify-without-jsonify@1.0.1: {}
 
+  json-stringify-safe@5.0.1: {}
+
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
@@ -2430,6 +2447,8 @@ snapshots:
 
   lilconfig@2.1.0: {}
 
+  linenumber@1.0.1: {}
+
   locate-character@3.0.0: {}
 
   locate-path@6.0.0:
@@ -2492,6 +2511,11 @@ snapshots:
   path-key@3.1.1: {}
 
   path-parse@1.0.7: {}
+
+  periscopic@2.0.3:
+    dependencies:
+      estree-walker: 2.0.2
+      is-reference: 1.2.1
 
   picocolors@1.1.1: {}
 
@@ -2639,6 +2663,14 @@ snapshots:
       semver: 7.7.4
     optionalDependencies:
       svelte: 5.53.12
+
+  svelte-reactive-preprocessor@0.8.3:
+    dependencies:
+      acorn: 8.16.0
+      escape-string-regexp: 4.0.0
+      json-stringify-safe: 5.0.1
+      linenumber: 1.0.1
+      periscopic: 2.0.3
 
   svelte@5.53.12:
     dependencies:
