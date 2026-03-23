@@ -46,10 +46,10 @@
   --sidebar-ring: oklch(0.708 0 0);
 
   /* Dashboard accent */
-  --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-bg: rgba(255, 255, 255, 0.06);
-  --glass-bg-hover: rgba(255, 255, 255, 0.1);
-  --glass-highlight: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-bg-hover: rgba(255, 255, 255, 0.06);
+  --glass-highlight: rgba(255, 255, 255, 0.1);
   --accent-warm: oklch(0.82 0.08 80);
   --accent-warm-dim: oklch(0.65 0.06 80);
 }

@@ -2,7 +2,7 @@
   import { ha } from '$lib/ha/client.svelte';
   import WeatherCard from '$lib/components/WeatherCard.svelte';
   import StatCard from '$lib/components/StatCard.svelte';
-  import { Sun, Wind, Droplets, Flower2 } from 'lucide-svelte';
+  import { Sun, Wind, Droplets, Flower2, Navigation } from 'lucide-svelte';
 
   const directions = [
     'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
@@ -10,11 +10,12 @@
   ];
 
   const uvLevels = [
-    { min: 1, max: 2, label: 'Niedrig', color: 'text-green-400' },
-    { min: 3, max: 5, label: 'Mittel', color: 'text-yellow-400' },
-    { min: 6, max: 7, label: 'Hoch', color: 'text-orange-400' },
-    { min: 8, max: 10, label: 'Sehr hoch', color: 'text-red-400' },
-    { min: 11, max: null, label: 'Extrem', color: 'text-red-500' }
+    { min: 0, max: 0, label: 'Keine', color: 'text-white/35', accentRgba: 'rgba(148,163,184,0.7)' },
+    { min: 1, max: 2, label: 'Niedrig', color: 'text-green-400', accentRgba: 'rgba(74,222,128,0.8)' },
+    { min: 3, max: 5, label: 'Mittel', color: 'text-yellow-400', accentRgba: 'rgba(250,204,21,0.8)' },
+    { min: 6, max: 7, label: 'Hoch', color: 'text-orange-400', accentRgba: 'rgba(251,146,60,0.8)' },
+    { min: 8, max: 10, label: 'Sehr hoch', color: 'text-red-400', accentRgba: 'rgba(248,113,113,0.8)' },
+    { min: 11, max: null, label: 'Extrem', color: 'text-red-500', accentRgba: 'rgba(239,68,68,0.9)' }
   ] as const;
 
   function uvLevel(uv: number) {
@@ -43,10 +44,13 @@
   let pressure = $derived(ha.getNumericState('sensor.gw2000a_absolute_pressure') ?? '--');
   let windSpeed = $derived(ha.getNumericState('sensor.wind_speed_10min_avg') ?? '--');
   let windGust = $derived(ha.getNumericState('sensor.gw2000a_wind_gust') ?? '--');
-  let windDir = $derived.by(() => {
+  let windDeg = $derived.by(() => {
     const deg = parseFloat(ha.getState('sensor.gw2000a_wind_direction_10m_avg') ?? '');
-    return isNaN(deg) ? '--' : directions[Math.round(deg / 22.5) % 16];
+    return isNaN(deg) ? null : deg;
   });
+  let windDir = $derived(
+    windDeg !== null ? directions[Math.round(windDeg / 22.5) % 16] : '--'
+  );
 
   // Sonne & UV
   let uv = $derived(parseFloat(ha.getNumericState('sensor.gw2000a_uv_index', 0) ?? '0'));
@@ -93,12 +97,24 @@
     return 'text-white/40';
   }
 
-  let pollenHeroCount = $derived(pollen.filter((p) => p.level >= 3).length);
-  let pollenHeroAccent = $derived(
-    pollen.length === 0 ? 'rgba(74,222,128,0.5)' :
-    pollen[0]?.level >= 4 ? 'rgba(248,113,113,0.7)' :
-    pollen[0]?.level >= 3 ? 'rgba(251,191,36,0.7)' :
-    'rgba(74,222,128,0.5)'
+  // Pollen hero: total active count + name of the highest one
+  let pollenActive = $derived(pollen.length);
+  let pollenTopName = $derived(pollen[0]?.name ?? '');
+  let pollenHeroUnit = $derived.by(() => {
+    if (pollenActive === 0) return 'Allergene';
+    if (pollenActive === 1) return pollenTopName;
+    return `aktiv · ${pollenTopName}`;
+  });
+  let pollenHeroAccentColor = $derived(
+    pollen.length === 0 ? 'rgba(74,222,128,0.7)' :
+    pollen[0]?.level >= 4 ? 'rgba(248,113,113,0.8)' :
+    pollen[0]?.level >= 3 ? 'rgba(251,191,36,0.8)' :
+    pollen[0]?.level >= 2 ? 'rgba(250,204,21,0.7)' :
+    'rgba(74,222,128,0.7)'
+  );
+  let pollenHeroTextColor = $derived(
+    pollen.length === 0 ? 'text-white/35' :
+    levelColor(pollen[0]?.level ?? 0)
   );
 </script>
 
@@ -109,7 +125,7 @@
     <StatCard
       icon={Droplets}
       title="Niederschlag"
-      accentColor="rgba(96,165,250,0.5)"
+      accentColor="rgba(96,165,250,0.8)"
       hero={`${rainProb}`}
       heroUnit="%"
       stats={[
@@ -124,9 +140,11 @@
     <StatCard
       icon={Wind}
       title="Wind & Druck"
-      accentColor="rgba(148,163,184,0.5)"
+      accentColor="rgba(148,163,184,0.8)"
       hero={windSpeed}
       heroUnit={`km/h ${windDir}`}
+      heroIcon={Navigation}
+      heroIconRotation={windDeg !== null ? windDeg + 180 : undefined}
       stats={[
         { label: 'Böen', value: `${windGust} km/h` },
         { label: 'Luftdruck', value: `${pressure} hPa` }
@@ -138,9 +156,10 @@
     <StatCard
       icon={Sun}
       title="Sonne & UV"
-      accentColor="rgba(250,204,21,0.5)"
+      accentColor={currentUvLevel?.accentRgba ?? 'rgba(250,204,21,0.5)'}
       hero={`${uv}`}
       heroUnit={currentUvLevel?.label ?? ''}
+      heroAccent={currentUvLevel?.color}
       stats={[
         { label: 'Sonnenaufgang', value: sunrise },
         { label: 'Sonnenuntergang', value: sunset }
@@ -152,9 +171,10 @@
     <StatCard
       icon={Flower2}
       title="Pollenflug"
-      accentColor={pollenHeroAccent}
-      hero={pollen.length > 0 ? `${pollenHeroCount}` : '0'}
-      heroUnit={pollenHeroCount === 1 ? 'Allergen' : 'Allergene'}
+      accentColor={pollenHeroAccentColor}
+      hero={`${pollenActive}`}
+      heroUnit={pollenHeroUnit}
+      heroAccent={pollenHeroTextColor}
       stats={pollen.length > 0
         ? pollen.map((entry) => ({
             label: entry.name,

@@ -13,6 +13,9 @@
     accentColor = 'rgba(255,255,255,0.25)',
     hero,
     heroUnit,
+    heroAccent,
+    heroIcon: HeroIconComponent,
+    heroIconRotation,
     stats
   }: {
     icon: typeof Icon;
@@ -20,17 +23,20 @@
     accentColor?: string;
     hero?: string;
     heroUnit?: string;
+    heroAccent?: string;
+    heroIcon?: typeof Icon;
+    heroIconRotation?: number;
     stats: StatRow[];
   } = $props();
 </script>
 
 <div
-  class="group glass-panel relative h-full overflow-hidden rounded-2xl transition-all duration-300 hover:bg-white/10 animate-fade-up"
+  class="group glass-panel relative h-full overflow-hidden rounded-2xl transition-all duration-300 hover:bg-white/6 animate-fade-up"
 >
-  <!-- Accent edge -->
+  <!-- Accent edge (inset to clear rounded corners) -->
   <div
-    class="absolute top-3 bottom-3 left-0 w-0.5 rounded-full"
-    style="background: {accentColor}; box-shadow: 0 0 8px {accentColor};"
+    class="absolute top-4 bottom-4 left-2 rounded-full"
+    style="width: 2px; background: {accentColor}; box-shadow: 0 0 6px 1px {accentColor};"
   ></div>
 
   <div class="flex h-full flex-col p-7 pl-8">
@@ -46,10 +52,18 @@
 
     <!-- Hero value -->
     {#if hero}
-      <div class="mb-4">
+      <div class="mb-4 flex items-baseline gap-2">
         <span class="text-4xl font-extralight tracking-tight text-white tabular-nums">{hero}</span>
         {#if heroUnit}
-          <span class="ml-1 text-base font-light text-white/35">{heroUnit}</span>
+          <span class="text-base font-light {heroAccent ?? 'text-white/35'}">{heroUnit}</span>
+        {/if}
+        {#if HeroIconComponent}
+          <span
+            class="ml-0.5 inline-flex text-white/40 transition-transform"
+            style={heroIconRotation !== undefined ? `transform: rotate(${heroIconRotation}deg)` : ''}
+          >
+            <HeroIconComponent size={18} strokeWidth={1.5} />
+          </span>
         {/if}
       </div>
     {/if}
