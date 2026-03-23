@@ -106,15 +106,15 @@ class HaClient {
   return this.states[entityId];
   }
 
-  getState(entityId: string, fallback = '--'): string {
+  getState(entityId: string): string | null {
   const entity = this.getEntity(entityId);
-  if (!entity || entity.state === 'unavailable' || entity.state === 'unknown') return fallback;
+  if (!entity || entity.state === 'unavailable' || entity.state === 'unknown') return null;
   return entity.state;
   }
 
-  getNumericState(entityId: string, fallback = '--', decimals = 1): string {
+  getNumericState(entityId: string, decimals = 1): string | null {
   const val = parseFloat(this.getEntity(entityId)?.state ?? '');
-  return isNaN(val) ? fallback : val.toFixed(decimals);
+  return isNaN(val) ? null : val.toFixed(decimals);
   }
 
   private send(msg: Record<string, unknown>) {

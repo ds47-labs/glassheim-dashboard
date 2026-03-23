@@ -15,7 +15,7 @@
 	];
 
 	let currentPath = $derived($page.url.pathname);
-	let time = $derived(ha.getState('sensor.time', '--'));
+	let time = $derived(ha.getState('sensor.time') ?? '--');
 </script>
 
 <header class="flex items-center justify-between px-16 py-10">
