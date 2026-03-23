@@ -14,7 +14,7 @@
 
   <div class="relative z-10 h-full w-full flex flex-col">
     <Header />
-    <main class="flex-1 px-12 pt-6 pb-20 flex flex-col gap-5 justify-center overflow-hidden">
+    <main class="flex-1 px-12 pt-5 pb-6 flex flex-col gap-4 justify-center overflow-hidden">
       {@render children()}
     </main>
     <div class="px-8 pb-0.5">

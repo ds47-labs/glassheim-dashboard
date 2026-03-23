@@ -1,1 +1,5 @@
-<h2 class="text-2xl font-extralight tracking-wide text-white/80">Nils</h2>
+<script lang="ts">
+  import RoomPlaceholder from '$lib/components/RoomPlaceholder.svelte';
+</script>
+
+<RoomPlaceholder name="Nils" />

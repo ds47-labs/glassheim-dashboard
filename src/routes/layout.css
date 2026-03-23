@@ -193,21 +193,21 @@
 
 /* Glass panel base style */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(48px);
-  -webkit-backdrop-filter: blur(48px);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  background: rgba(6, 8, 14, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(48px) saturate(1.4);
+  -webkit-backdrop-filter: blur(48px) saturate(1.4);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
 .glass-panel-elevated {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(56px);
-  -webkit-backdrop-filter: blur(56px);
+  background: rgba(6, 8, 14, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  backdrop-filter: blur(56px) saturate(1.5);
+  -webkit-backdrop-filter: blur(56px) saturate(1.5);
   box-shadow:
-    0 8px 40px rgba(0, 0, 0, 0.2),
-    0 2px 8px rgba(0, 0, 0, 0.1);
+    0 8px 40px rgba(0, 0, 0, 0.28),
+    0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Noise texture overlay */
@@ -215,7 +215,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  opacity: 0.03;
+  opacity: 0.025;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-repeat: repeat;
@@ -258,4 +258,39 @@
     min-height: 44px;
     min-width: 44px;
   }
+}
+
+/* Focus-visible styles */
+:focus-visible {
+  outline: 1.5px solid rgba(255, 255, 255, 0.35);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Stat section divider */
+.stat-divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding-top: 0.75rem;
+}
+
+/* Secondary glass panel — more transparent than glass-panel */
+.glass-panel-subtle {
+  background: rgba(6, 8, 14, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(32px) saturate(1.2);
+  -webkit-backdrop-filter: blur(32px) saturate(1.2);
 }

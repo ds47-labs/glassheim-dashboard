@@ -128,7 +128,7 @@
 
 <WeatherCard showForecast />
 
-<div class="grid shrink-0 grid-cols-4 gap-4">
+<div class="grid shrink-0 grid-cols-4 gap-3.5">
   <div style="animation-delay: 80ms" class="animate-fade-up">
     <StatCard
       icon={Droplets}

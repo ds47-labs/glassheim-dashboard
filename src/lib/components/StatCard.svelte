@@ -31,7 +31,7 @@
 </script>
 
 <div
-  class="glass-panel animate-fade-up relative h-full overflow-hidden rounded-2xl transition-all duration-300"
+  class="glass-panel relative h-full overflow-hidden rounded-2xl"
 >
   <div
     class="absolute top-4 bottom-4 left-2 rounded-full"
@@ -40,12 +40,12 @@
 
   <div class="flex h-full flex-col p-7 pl-8">
     <div class="mb-4 flex items-center gap-2.5">
-      <div class="text-white/40">
+      <div class="text-white/50">
         {#if IconComponent}
-          <IconComponent size={20} strokeWidth={1.2} />
+          <IconComponent size={18} strokeWidth={1.3} />
         {/if}
       </div>
-      <span class="text-xs font-medium tracking-[0.18em] text-white uppercase">{title}</span>
+      <span class="text-xs font-medium tracking-[0.18em] text-white/80 uppercase">{title}</span>
     </div>
 
     {#if hero}
@@ -67,11 +67,11 @@
       </div>
     {/if}
 
-    <div class="mt-auto flex flex-col gap-2">
+    <div class="stat-divider flex flex-col gap-2.5">
       {#each stats as stat, i (i)}
         <div class="flex items-baseline justify-between gap-3">
-          <span class="text-xs tracking-wide text-white/35">{stat.label}</span>
-          <span class="text-sm font-light tabular-nums {stat.accent ?? 'text-white/80'}"
+          <span class="text-xs tracking-wide text-white/32">{stat.label}</span>
+          <span class="text-sm font-light tabular-nums {stat.accent ?? 'text-white/75'}"
             >{stat.value}</span
           >
         </div>
