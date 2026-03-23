@@ -19,7 +19,7 @@
 </script>
 
 <header class="flex items-center justify-between px-12 py-8">
-	<div class="shrink-0 text-3xl font-extralight tracking-[0.25em] text-white/90 uppercase">
+	<div class="shrink-0 text-3xl leading-none font-extralight tracking-[0.25em] text-white/90 uppercase">
 		Hamavil
 	</div>
 
@@ -30,7 +30,7 @@
 			{/if}
 			<a
 				href={item.href}
-				class="relative rounded-lg px-3 py-1.5 text-base tracking-wide transition-all duration-300
+				class="flex items-center rounded-lg px-3 py-1.5 text-base leading-none tracking-wide transition-all duration-300
 				{currentPath === item.href
 					? 'text-white bg-white/10'
 					: 'text-white/45 hover:text-white/80 hover:bg-white/5'}"
@@ -40,7 +40,7 @@
 		{/each}
 	</nav>
 
-	<div class="shrink-0 text-4xl font-extralight tracking-wider text-white/90 tabular-nums">
+	<div class="shrink-0 text-4xl leading-none font-extralight tracking-wider text-white/90 tabular-nums">
 		{time}
 	</div>
 </header>

@@ -29,26 +29,11 @@
     guest: { label: 'Gast', icon: Users }
   };
 
-  type TrashType = { label: string; color: string; border: string; text: string };
+  type TrashType = { label: string; text: string };
   const trashTypes: Record<string, TrashType> = {
-    gelb: {
-      label: 'Gelber Sack',
-      color: 'bg-yellow-500/15',
-      border: 'border-yellow-400/30',
-      text: 'text-yellow-400'
-    },
-    rest: {
-      label: 'Restmüll',
-      color: 'bg-white/8',
-      border: 'border-white/20',
-      text: 'text-white/70'
-    },
-    windel: {
-      label: 'Windel',
-      color: 'bg-sky-500/15',
-      border: 'border-sky-400/30',
-      text: 'text-sky-400'
-    }
+    gelb: { label: 'Gelber Sack', text: 'text-yellow-400' },
+    rest: { label: 'Restmüll', text: 'text-white/60' },
+    windel: { label: 'Windel', text: 'text-sky-400' }
   };
 
   let homeStatus: HomeStatus = $state('home');
@@ -74,7 +59,7 @@
     severity: 'orange'
   });
 
-  type AlertStyle = { section: string; divider: string; text: string };
+  type AlertStyle = { text: string };
   type Alert =
     | {
         id: string;
@@ -95,20 +80,12 @@
   const alerts = $derived.by<Alert[]>(() => {
     const list: Alert[] = [];
     if (weatherWarning) {
-      // const c =
-      //   weatherWarning.severity === 'red'
-      //     ? { section: 'bg-red-500/15', divider: 'border-red-400/30', text: 'text-red-300' }
-      //     : {
-      //         section: 'bg-orange-500/15',
-      //         divider: 'border-orange-400/30',
-      //         text: 'text-orange-300'
-      //       };
       // list.push({
       //   id: 'weather',
       //   label: weatherWarning.label,
       //   icon: TriangleAlert,
       //   dismissible: false,
-      //   style: c
+      //   style: { text: weatherWarning.severity === 'red' ? 'text-red-400' : 'text-orange-400' }
       // });
     }
     if (garageOpen)
@@ -117,7 +94,7 @@
         label: 'Garage offen',
         icon: DoorOpen,
         dismissible: false,
-        style: { section: 'bg-red-500/15', divider: 'border-red-400/30', text: 'text-red-300' }
+        style: { text: 'text-red-400' }
       });
     if (!doorLocked)
       list.push({
@@ -125,11 +102,7 @@
         label: 'Haustür offen',
         icon: LockOpen,
         dismissible: false,
-        style: {
-          section: 'bg-yellow-500/15',
-          divider: 'border-yellow-400/30',
-          text: 'text-yellow-300'
-        }
+        style: { text: 'text-yellow-400' }
       });
     if (trashDue && !trashAcknowledged) {
       const t = trashTypes[trashDue];
@@ -138,7 +111,7 @@
         label: t.label,
         icon: Trash2,
         dismissible: true,
-        style: { section: t.color, divider: t.border, text: t.text },
+        style: { text: t.text },
         onDismiss: () => {
           trashAcknowledged = true;
         }
@@ -166,19 +139,19 @@
 <div class="bg-black/50 backdrop-blur-3xl backdrop-saturate-150">
   <div class="mx-auto flex h-12 max-w-450 items-center px-10">
 
-    <!-- Left: Home status + Presence -->
-    <div class="flex items-center gap-4">
+    <!-- Left: Home status + Presence (fixed width to prevent shift) -->
+    <div class="flex w-72 shrink-0 items-center gap-4">
       <div class="relative">
         <button
           onclick={() => (statusOpen = !statusOpen)}
           title={statusConfig[homeStatus].label}
-          class="flex items-center gap-2 transition-all duration-200 active:opacity-70"
+          class="flex w-28 items-center gap-2 transition-all duration-200 active:opacity-70"
         >
-          <StatusIcon strokeWidth={1.2} class="h-4 w-4 text-white/60" />
+          <StatusIcon strokeWidth={1.2} class="h-4 w-4 shrink-0 text-white/60" />
           <span class="text-sm text-white/70">{statusConfig[homeStatus].label}</span>
           <ChevronDown
             strokeWidth={1.5}
-            class="h-3 w-3 text-white/25 transition-transform duration-300 {statusOpen ? 'rotate-180' : ''}"
+            class="ml-auto h-3 w-3 shrink-0 text-white/25 transition-transform duration-300 {statusOpen ? 'rotate-180' : ''}"
           />
         </button>
 
@@ -261,67 +234,64 @@
         </div>
         <div class="flex items-center gap-1.5" title="Trockner fertig">
           <Dryer strokeWidth={1.2} class="h-3.5 w-3.5 text-white/45" />
-          <CircleCheck strokeWidth={1.2} class="h-3 w-3 text-emerald-500/50" />
+          <CircleCheck strokeWidth={1.2} class="h-3 w-3 text-green-400/50" />
         </div>
       </div>
     </div>
 
-    <!-- Right: Alerts -->
-    <div class="flex items-center">
+    <!-- Right: Alerts (fixed width to prevent shift) -->
+    <div class="relative flex w-52 shrink-0 items-center justify-end">
       {#if hasAlerts}
-        <div class="relative flex items-center gap-2">
-          <div class="flex items-center gap-2 rounded-lg border px-3 py-1.5 {topAlert.style.section} {topAlert.style.divider}">
-            <TopAlertIcon strokeWidth={1.2} class="h-3.5 w-3.5 {topAlert.style.text}" />
-            <span class="text-sm {topAlert.style.text}">{topAlert.label}</span>
-            {#if topAlert.dismissible}
-              <button
-                onclick={() => topAlert.onDismiss()}
-                class="{topAlert.style.text} opacity-40 transition-opacity hover:opacity-80"
-                title="Quittieren"
-              >
-                <X strokeWidth={1.5} class="h-3 w-3" />
-              </button>
-            {/if}
-          </div>
-
+        <div class="flex items-center gap-2">
+          <TopAlertIcon strokeWidth={1.2} class="h-3.5 w-3.5 {topAlert.style.text}" />
+          <span class="text-sm {topAlert.style.text}">{topAlert.label}</span>
+          {#if topAlert.dismissible}
+            <button
+              onclick={() => topAlert.onDismiss()}
+              class="{topAlert.style.text} opacity-40 transition-opacity hover:opacity-80"
+              title="Quittieren"
+            >
+              <X strokeWidth={1.5} class="h-3 w-3" />
+            </button>
+          {/if}
           {#if alerts.length > 1}
             <button
               onclick={() => (alertsOpen = !alertsOpen)}
-              class="flex h-6 w-6 items-center justify-center rounded-full bg-white/8 text-xs text-white/50 tabular-nums transition-all hover:bg-white/15"
+              class="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-white/8 text-[0.6rem] text-white/50 tabular-nums transition-all hover:bg-white/15"
               title="Alle Alarme anzeigen"
             >
               +{alerts.length - 1}
             </button>
           {/if}
-
-          {#if alertsOpen && alerts.length > 1}
-            <div class="glass-dropdown absolute right-0 bottom-full mb-3 flex min-w-52 flex-col gap-1 rounded-xl p-1.5 animate-fade-up">
-              {#each alerts as alert (alert.id)}
-                {@const AlertIcon = alert.icon}
-                <div class="flex items-center gap-2 rounded-lg px-3 py-2 {alert.style.section}">
-                  <AlertIcon strokeWidth={1.2} class="h-3.5 w-3.5 {alert.style.text}" />
-                  <span class="text-sm {alert.style.text} flex-1">{alert.label}</span>
-                  {#if alert.dismissible}
-                    <button
-                      onclick={() => {
-                        alert.onDismiss();
-                        if (alerts.length <= 1) alertsOpen = false;
-                      }}
-                      class="{alert.style.text} opacity-40 transition-opacity hover:opacity-80"
-                      title="Quittieren"
-                    >
-                      <X strokeWidth={1.5} class="h-3 w-3" />
-                    </button>
-                  {/if}
-                </div>
-              {/each}
-            </div>
-          {/if}
         </div>
       {:else}
-        <div class="flex items-center gap-1.5 text-emerald-500/40">
+        <div class="flex items-center gap-1.5 text-green-400/40">
           <CircleCheck strokeWidth={1.2} class="h-3.5 w-3.5" />
           <span class="text-xs tracking-wider">Alles OK</span>
+        </div>
+      {/if}
+
+      {#if alertsOpen && alerts.length > 1}
+        <div class="glass-dropdown absolute right-0 bottom-full mb-3 flex min-w-52 flex-col gap-1 rounded-xl p-1.5 animate-fade-up">
+          {#each alerts as alert (alert.id)}
+            {@const AlertIcon = alert.icon}
+            <div class="flex items-center gap-2 rounded-lg px-3 py-2">
+              <AlertIcon strokeWidth={1.2} class="h-3.5 w-3.5 {alert.style.text}" />
+              <span class="text-sm {alert.style.text} flex-1">{alert.label}</span>
+              {#if alert.dismissible}
+                <button
+                  onclick={() => {
+                    alert.onDismiss();
+                    if (alerts.length <= 1) alertsOpen = false;
+                  }}
+                  class="{alert.style.text} opacity-40 transition-opacity hover:opacity-80"
+                  title="Quittieren"
+                >
+                  <X strokeWidth={1.5} class="h-3 w-3" />
+                </button>
+              {/if}
+            </div>
+          {/each}
         </div>
       {/if}
     </div>
