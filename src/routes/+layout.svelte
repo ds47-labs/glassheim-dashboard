@@ -7,8 +7,8 @@
   let { children } = $props();
 
   onMount(() => {
-  ha.connect();
-  return () => ha.disconnect();
+    ha.connect();
+    return () => ha.disconnect();
   });
 </script>
 

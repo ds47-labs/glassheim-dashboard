@@ -18,27 +18,29 @@
 	let time = $derived(ha.getState('sensor.time') ?? '--');
 </script>
 
-<header class="flex items-center justify-between px-16 py-10">
-	<div class="shrink-0 text-4xl font-light tracking-wider text-white">HAMAVIL.</div>
+<header class="flex items-center justify-between px-12 py-8">
+	<div class="shrink-0 text-3xl font-extralight tracking-[0.25em] text-white/90 uppercase">
+		Hamavil
+	</div>
 
-	<nav class="flex items-center gap-6">
+	<nav class="flex items-center gap-1">
 		{#each navItems as item, i (item.label)}
 			{#if i === 3}
-				<span class="font-extralight text-white">|</span>
+				<div class="mx-3 h-4 w-px bg-white/15"></div>
 			{/if}
 			<a
 				href={item.href}
-				class="relative pb-1 text-lg tracking-wide text-white transition-colors
-          {currentPath === item.href
-					? 'after:absolute after:right-0 after:bottom-0 after:left-0 after:h-0.5 after:bg-white'
-					: ''}"
+				class="relative rounded-lg px-3 py-1.5 text-base tracking-wide transition-all duration-300
+				{currentPath === item.href
+					? 'text-white bg-white/10'
+					: 'text-white/45 hover:text-white/80 hover:bg-white/5'}"
 			>
 				{item.label}
 			</a>
 		{/each}
 	</nav>
 
-	<div class="shrink-0 text-4xl font-light text-white tabular-nums">
+	<div class="shrink-0 text-4xl font-extralight tracking-wider text-white/90 tabular-nums">
 		{time}
 	</div>
 </header>

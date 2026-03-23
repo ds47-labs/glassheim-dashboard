@@ -12,39 +12,39 @@
   } = $props();
 </script>
 
-<div class="glass-panel min-h-64 rounded-3xl border border-white/15 bg-white/5 p-10 backdrop-blur-3xl shadow-xl transition-all hover:bg-white/10 flex items-center justify-center">
-  <div class="flex items-start gap-6">
-    <div class="text-white/70 mt-1">
+<div class="glass-panel min-h-56 rounded-2xl p-8 transition-all duration-300 hover:bg-white/10 flex items-center justify-center animate-fade-up">
+  <div class="flex items-start gap-5">
+    <div class="text-white/60 mt-0.5">
       {#if IconComponent}
-      <IconComponent size={48} strokeWidth={1} />
+      <IconComponent size={40} strokeWidth={0.8} />
       {/if}
     </div>
-    
+
     <div>
-      <h3 class="mb-5 text-xl font-semibold tracking-wide text-white">{title}</h3>
-      
-      <div class="space-y-4">
+      <h3 class="mb-4 text-lg font-medium tracking-wide text-white">{title}</h3>
+
+      <div class="space-y-3.5">
         {#each stats as stat, i (i)}
         <div class="grid grid-cols-[auto_1fr] items-center gap-x-4">
           {#if typeof stat.label === 'string'}
-            <span class="font-medium text-white/40 uppercase text-s tracking-widest">{stat.label}</span>
+            <span class="font-medium text-white/50 uppercase text-xs tracking-[0.15em]">{stat.label}</span>
           {:else}
             {@const LabelIcon = stat.label}
-            <LabelIcon size={36} strokeWidth={1.5} class="text-white/40" />
+            <LabelIcon size={32} strokeWidth={1} class="text-white/50" />
           {/if}
           {#if stat.label2 !== undefined}
             <div class="flex items-center gap-3">
-              <span class="text-xl font-light text-white/80">{stat.value}</span>
+              <span class="text-lg font-light text-white/90 tabular-nums">{stat.value}</span>
               {#if typeof stat.label2 === 'string'}
-                <span class="font-medium text-white/40 uppercase text-s tracking-widest">{stat.label2}</span>
+                <span class="font-medium text-white/50 uppercase text-xs tracking-[0.15em]">{stat.label2}</span>
               {:else}
                 {@const Label2Icon = stat.label2}
-                <Label2Icon size={36} strokeWidth={1.5} class="text-white/40" />
+                <Label2Icon size={32} strokeWidth={1} class="text-white/50" />
               {/if}
-              <span class="text-xl font-light text-white/80">{stat.value2}</span>
+              <span class="text-lg font-light text-white/90 tabular-nums">{stat.value2}</span>
             </div>
           {:else}
-            <span class="text-xl font-light text-white/80">{stat.value}</span>
+            <span class="text-lg font-light text-white/90 tabular-nums">{stat.value}</span>
           {/if}
         </div>
         {/each}

@@ -48,31 +48,37 @@
 
 <WeatherCard showForecast />
 
-<div class="grid shrink-0 grid-cols-3 gap-6">
-  <StatCard
-    icon={Droplets}
-    title="Niederschlag"
-    stats={[
-      { label: 'Wahrscheinlichkeit', value: `${rainProb} %` },
-      { label: 'Menge', value: `${rainAmount} mm` }
-    ]}
-  />
+<div class="grid shrink-0 grid-cols-3 gap-4">
+  <div style="animation-delay: 100ms" class="animate-fade-up">
+    <StatCard
+      icon={Droplets}
+      title="Niederschlag"
+      stats={[
+        { label: 'Wahrscheinlichkeit', value: `${rainProb} %` },
+        { label: 'Menge', value: `${rainAmount} mm` }
+      ]}
+    />
+  </div>
 
-  <StatCard
-    icon={Wind}
-    title="Wind & Druck"
-    stats={[
-      { label: 'Wind', value: `${windSpeed} km/h ${windDir}` },
-      { label: 'Druck', value: `${pressure} hPa` }
-    ]}
-  />
+  <div style="animation-delay: 180ms" class="animate-fade-up">
+    <StatCard
+      icon={Wind}
+      title="Wind & Druck"
+      stats={[
+        { label: 'Wind', value: `${windSpeed} km/h ${windDir}` },
+        { label: 'Druck', value: `${pressure} hPa` }
+      ]}
+    />
+  </div>
 
-  <StatCard
-    icon={Sun}
-    title="Sonne & UV"
-    stats={[
-      { label: 'UV Index', value: currentUvLevel ? `${uv} (${currentUvLevel.label})` : `${uv}` },
-      { label: Sunrise, value: sunrise, label2: Sunset, value2: sunset }
-    ]}
-  />
+  <div style="animation-delay: 260ms" class="animate-fade-up">
+    <StatCard
+      icon={Sun}
+      title="Sonne & UV"
+      stats={[
+        { label: 'UV Index', value: currentUvLevel ? `${uv} (${currentUvLevel.label})` : `${uv}` },
+        { label: Sunrise, value: sunrise, label2: Sunset, value2: sunset }
+      ]}
+    />
+  </div>
 </div>
