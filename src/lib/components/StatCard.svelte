@@ -7,6 +7,11 @@
     accent?: string;
   };
 
+  type ForecastHour = {
+    time: string;
+    level: number;
+  };
+
   let {
     icon: IconComponent,
     title,
@@ -16,7 +21,8 @@
     heroAccent,
     heroIcon: HeroIconComponent,
     heroIconRotation,
-    stats
+    stats,
+    forecast
   }: {
     icon: typeof Icon;
     title: string;
@@ -27,19 +33,15 @@
     heroIcon?: typeof Icon;
     heroIconRotation?: number;
     stats: StatRow[];
+    forecast?: ForecastHour[];
   } = $props();
 </script>
 
-<div
-  class="glass-panel relative h-full overflow-hidden rounded-2xl"
->
+<div class="glass-panel relative h-full overflow-hidden rounded-2xl">
   <!-- Fading glow accent bar -->
   <div
     class="accent-bar absolute top-0 bottom-0 left-0 w-1"
-    style="background: {accentColor};
-            box-shadow: 0 0 20px {accentColor}, 0 0 40px {accentColor};
-            mask-image: linear-gradient(180deg, white 0%, white 40%, rgba(255,255,255,0.6) 70%, transparent 100%);
-            -webkit-mask-image: linear-gradient(180deg, white 0%, white 40%, rgba(255,255,255,0.6) 70%, transparent 100%);"
+    style="background: {accentColor}; box-shadow: 0 0 20px {accentColor}, 0 0 40px {accentColor};mask-image: linear-gradient(180deg, white 0%, white 40%, rgba(255,255,255,0.6) 70%, transparent 100%);-webkit-mask-image: linear-gradient(180deg, white 0%, white 40%, rgba(255,255,255,0.6) 70%, transparent 100%);"
   ></div>
 
   <div class="flex h-full flex-col p-7 pl-8">
@@ -53,20 +55,65 @@
     </div>
 
     {#if hero}
-      <div class="mb-7 flex items-baseline gap-2">
-        <span class="text-4xl font-extralight tracking-tight text-white tabular-nums">{hero}</span>
-        {#if heroUnit}
-          <span class="text-base font-light {heroAccent ?? 'text-white/45'}">{heroUnit}</span>
-        {/if}
-        {#if HeroIconComponent}
-          <span
-            class="ml-1 inline-flex text-white/65 transition-transform"
-            style={heroIconRotation !== undefined
-              ? `transform: rotate(${heroIconRotation}deg)`
-              : ''}
-          >
-            <HeroIconComponent size={16} strokeWidth={1.4} />
-          </span>
+      <div class="mb-7 flex items-baseline justify-between gap-4">
+        <div class="flex items-baseline gap-2 flex-1">
+          <span class="text-4xl font-extralight tracking-tight text-white tabular-nums">{hero}</span>
+          {#if heroUnit}
+            <span class="text-base font-light {heroAccent ?? 'text-white/45'}">{heroUnit}</span>
+          {/if}
+          {#if HeroIconComponent}
+            <span
+              class="ml-1 inline-flex text-white/65 transition-transform"
+              style={heroIconRotation !== undefined
+                ? `transform: rotate(${heroIconRotation}deg)`
+                : ''}
+            >
+              <HeroIconComponent size={16} strokeWidth={1.4} />
+            </span>
+          {/if}
+        </div>
+
+        {#if forecast && forecast.length > 0}
+          {#if true}
+            {@const maxLevel = Math.max(...forecast.map(h => h.level)) || 1}
+            {@const points = forecast.map((h, i) => {
+              const x = (i / (forecast.length - 1)) * 160;
+              const y = 18 - (h.level / maxLevel) * 14;
+              return [x, y];
+            })}
+            {@const pathData = `M ${points[0][0]} ${points[0][1]} ` +
+              points.slice(1).map((p, i) => {
+                const prev = points[i];
+                const cp1x = prev[0] + (p[0] - prev[0]) / 2;
+                const cp1y = prev[1];
+                const cp2x = prev[0] + (p[0] - prev[0]) / 2;
+                const cp2y = p[1];
+                return `C ${cp1x} ${cp1y} ${cp2x} ${cp2y} ${p[0]} ${p[1]}`;
+              }).join(' ')}
+            <svg class="h-5 w-40 shrink-0" viewBox="0 0 160 20" preserveAspectRatio="none" style="opacity: 0.75">
+              <defs>
+                <linearGradient id="pollenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color: {accentColor}; stop-opacity: 0.25" />
+                  <stop offset="100%" style="stop-color: {accentColor}; stop-opacity: 0.02" />
+                </linearGradient>
+              </defs>
+              <!-- Baseline (0 level) -->
+              <line x1="0" y1="18" x2="160" y2="18" stroke="rgba(255,255,255,0.1)" stroke-width="1" vector-effect="non-scaling-stroke" />
+              <!-- Area under curve -->
+              <path
+                d="{pathData} L 160 18 L 0 18 Z"
+                fill="url(#pollenGradient)"
+              />
+              <!-- Curve line -->
+              <path
+                d={pathData}
+                stroke={accentColor}
+                stroke-width="1"
+                fill="none"
+                vector-effect="non-scaling-stroke"
+              />
+            </svg>
+          {/if}
         {/if}
       </div>
     {/if}

@@ -84,29 +84,30 @@
 <div class="glass-panel-elevated rounded-2xl p-10">
   <div class="flex items-center justify-between gap-10">
     <div class="flex-1">
-      <div class="mb-8 flex items-end gap-8">
+      <div class="mb-8 flex items-end gap-6">
         {#if weatherCondition.icon}
           {@const ConditionIcon = weatherCondition.icon}
-          <div class="text-white/75">
-            <ConditionIcon strokeWidth={0.75} class="h-28 w-28" />
+          <div class="-mb-4 text-white/60">
+            <ConditionIcon strokeWidth={0.6} class="h-64 w-64" />
           </div>
         {/if}
-        <div class="flex flex-col pb-2">
+        <div class="flex flex-col pb-4">
           <div class="text-9xl leading-none font-extralight tracking-tight text-white tabular-nums">
-            {temperature}<span class="text-4xl font-light text-white/55 ml-2">°C</span>
+            {temperature}<span class="ml-2 text-5xl font-light text-white/55">°C</span>
           </div>
-          <div class="mt-4 text-2xl font-light text-white/75">
+          <div class="mt-6 text-2xl font-light text-white/75">
             {weatherCondition.label}
           </div>
         </div>
       </div>
 
-      <div class="flex items-center gap-5 text-sm font-light text-white/55">
+      <div class="ml-5 flex items-center gap-5 text-lg font-light text-white/55">
         <span>Gefühlt <span class="text-white/70 tabular-nums">{feelsLike}°C</span></span>
         <span class="text-white/20">·</span>
         <span class="tabular-nums"
           ><span class="text-white/70">{todayHigh}°</span>
-          <span class="text-white/25 mx-2">/</span><span class="text-white/55">{todayLow}°</span></span
+          <span class="mx-2 text-white/25">/</span><span class="text-white/55">{todayLow}°</span
+          ></span
         >
       </div>
     </div>
@@ -116,7 +117,8 @@
         {#each forecast as data, i (data.day)}
           {@const ForecastIcon = data.icon}
           <div
-            class="forecast-card flex w-36 flex-col items-center justify-center gap-4 rounded-xl p-5"
+            class="forecast-card animate-fade-up flex w-36 flex-col items-center justify-center gap-4 rounded-xl p-5"
+            style="animation-delay: {100 + i * 60}ms"
           >
             <div class="text-xs font-medium tracking-[0.18em] text-white/80 uppercase">
               {data.day}
@@ -130,7 +132,7 @@
                 <span class="text-white/30">/</span>
                 <span class="text-white/55">{data.low}°</span>
               </div>
-              <div class="text-xs tracking-wider text-white/50 font-light">
+              <div class="text-xs font-light tracking-wider text-white/50">
                 {data.description}
               </div>
             </div>

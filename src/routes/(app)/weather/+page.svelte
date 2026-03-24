@@ -118,6 +118,24 @@
   let pollenLevelStyle = $derived(getPollenLevelStyle(pollenHeroLevel));
   let pollenHeroAccentColor = $derived(`var(${pollenLevelStyle.accentVar})`);
   let pollenHeroTextColor = $derived(pollenLevelStyle.textColor);
+
+  // Pollen forecast from HA (take next 24 hours)
+  let pollenEntity = $derived(ha.getEntity('sensor.polleninformation_hamavil_allergy_risk_hourly'));
+  let pollenForecast = $derived.by(() => {
+    const entity = pollenEntity;
+    const forecast = entity?.attributes?.forecast as unknown[];
+    if (!Array.isArray(forecast)) return [];
+
+    // Take next 24 hours
+    return forecast.slice(0, 24).map((item: unknown) => {
+      const itemObj = item as Record<string, unknown>;
+      return {
+        hour: 0,
+        level: (itemObj.level as number) ?? 0,
+        time: itemObj.time as string
+      };
+    });
+  });
 </script>
 
 <WeatherCard showForecast />
@@ -184,6 +202,7 @@
         value: entry.levelName,
         accent: getPollenLevelStyle(entry.level).textColor
       }))}
+      forecast={pollenForecast}
     />
   </div>
 </div>
