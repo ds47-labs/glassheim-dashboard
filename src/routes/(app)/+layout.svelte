@@ -1,8 +1,6 @@
 <script lang="ts">
   import background from '$lib/assets/weather-bg.jpg';
   import Header from '$lib/components/Header.svelte';
-  import StatusBar from '$lib/components/StatusBar.svelte';
-
   let { children } = $props();
 </script>
 
@@ -20,11 +18,10 @@
     <main class="flex min-h-0 flex-1 flex-col justify-center gap-4 px-12 pt-5 pb-4">
       {@render children()}
     </main>
-    <div class="flex flex-col gap-2 px-12 pb-6">
+    <div class="flex flex-col gap-3 px-12 pb-6">
       <div class="px-2">
         <span class="font-mono text-xs text-white/10">{__BUILD_VERSION__}</span>
       </div>
-      <StatusBar />
     </div>
   </div>
 </div>

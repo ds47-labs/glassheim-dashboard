@@ -10,7 +10,7 @@
   let {
     icon: IconComponent,
     title,
-    accentColor = 'rgba(255,255,255,0.25)',
+    accentColor = 'var(--accent-default)',
     hero,
     heroUnit,
     heroAccent,
@@ -31,8 +31,7 @@
 </script>
 
 <div
-  class="glass-panel animate-fade-up relative h-full overflow-hidden rounded-2xl"
-  style="animation-delay: var(--delay, 0ms)"
+  class="glass-panel relative h-full overflow-hidden rounded-2xl"
 >
   <!-- Fading glow accent bar -->
   <div

@@ -2,7 +2,7 @@
   let { name }: { name: string } = $props();
 </script>
 
-<div class="animate-fade-up flex flex-1 flex-col gap-4">
+<div class="flex flex-1 flex-col gap-4">
   <div class="glass-panel rounded-2xl p-8">
     <div class="flex items-end justify-between">
       <div>
@@ -16,8 +16,8 @@
   <div class="grid flex-1 grid-cols-3 gap-4">
     {#each Array(6) as _, i}
       <div
-        class="glass-panel-subtle animate-fade-up rounded-xl"
-        style="animation-delay: {80 + i * 40}ms; min-height: 5rem;"
+        class="glass-panel-subtle rounded-xl"
+        style="min-height: 5rem;"
       ></div>
     {/each}
   </div>

@@ -5,40 +5,52 @@
   import { Sun, Wind, Droplets, Flower2, Navigation } from 'lucide-svelte';
 
   const uvLevels = [
-    { min: 0, max: 0, label: 'Keine', color: 'text-white/35', accentRgba: 'rgba(148,163,184,0.7)' },
+    { min: 0, max: 0, label: 'Keine', color: 'text-white/35', accentVar: '--accent-uv-none' },
     {
       min: 1,
       max: 2,
       label: 'Niedrig',
       color: 'text-green-400',
-      accentRgba: 'rgba(74,222,128,0.8)'
+      accentVar: '--accent-uv-low'
     },
     {
       min: 3,
       max: 5,
       label: 'Mittel',
       color: 'text-yellow-400',
-      accentRgba: 'rgba(250,204,21,0.8)'
+      accentVar: '--accent-uv-mid'
     },
-    { min: 6, max: 7, label: 'Hoch', color: 'text-orange-400', accentRgba: 'rgba(251,146,60,0.8)' },
+    { min: 6, max: 7, label: 'Hoch', color: 'text-orange-400', accentVar: '--accent-uv-high' },
     {
       min: 8,
       max: 10,
       label: 'Sehr hoch',
       color: 'text-red-400',
-      accentRgba: 'rgba(248,113,113,0.8)'
+      accentVar: '--accent-uv-very-high'
     },
     {
       min: 11,
       max: null,
       label: 'Extrem',
       color: 'text-red-500',
-      accentRgba: 'rgba(239,68,68,0.9)'
+      accentVar: '--accent-uv-extreme'
     }
   ] as const;
 
   function uvLevel(uv: number) {
     return uvLevels.find((l) => uv >= l.min && (l.max === null || uv <= l.max)) ?? null;
+  }
+
+  const pollenLevels = [
+    { level: 0, textColor: 'text-white/40', accentVar: '--accent-pollen-low' },
+    { level: 1, textColor: 'text-green-400', accentVar: '--accent-pollen-low' },
+    { level: 2, textColor: 'text-yellow-400', accentVar: '--accent-pollen-mid1' },
+    { level: 3, textColor: 'text-amber-400', accentVar: '--accent-pollen-mid2' },
+    { level: 4, textColor: 'text-red-400', accentVar: '--accent-pollen-high' }
+  ] as const;
+
+  function getPollenLevelStyle(level: number) {
+    return pollenLevels.find((p) => p.level === level) ?? pollenLevels[pollenLevels.length - 1];
   }
 
   function fmtTime(iso: string | undefined): string {
@@ -49,8 +61,8 @@
   let actualRainRate = $derived(ha.getState('sensor.gw2000a_rain_rate_piezo') ?? '--');
   let isRaining = $derived(ha.getState('binary_sensor.gw2000a_rain_state_piezo'));
   let dailyRainRate = $derived(ha.getState('sensor.gw2000a_daily_rain_piezo') ?? '--');
-  let humidity = $derived(ha.getNumericState('sensor.gw2000a_outdoor_humidity', 0) ?? '--');
-  let dewPoint = $derived(ha.getNumericState('sensor.gw2000a_dew_point') ?? '--');
+  let humidity = $derived(ha.getNumericState('sensor.gw2000a_humidity', 0) ?? '--');
+  let dewPoint = $derived(ha.getNumericState('sensor.gw2000a_dewpoint') ?? '--');
 
   let pressure = $derived(ha.getNumericState('sensor.gw2000a_absolute_pressure') ?? '--');
   let windSpeed = $derived(ha.getNumericState('sensor.wind_speed_10min_avg') ?? '--');
@@ -95,14 +107,6 @@
       .sort((a, b) => b.level - a.level)
   );
 
-  function levelColor(level: number): string {
-    if (level >= 4) return 'text-red-400';
-    if (level === 3) return 'text-amber-400';
-    if (level === 2) return 'text-yellow-400';
-    if (level === 1) return 'text-green-400';
-    return 'text-white/40';
-  }
-
   let pollenActive = $derived(pollen.length);
   let pollenTopName = $derived(pollen[0]?.name ?? '');
   let pollenHeroUnit = $derived.by(() => {
@@ -110,30 +114,10 @@
     if (pollenActive === 1) return pollenTopName;
     return `aktiv · ${pollenTopName}`;
   });
-  let pollenHeroAccentColor = $derived(
-    pollen.length === 0
-      ? 'rgba(74,222,128,0.7)'
-      : pollen[0]?.level >= 4
-        ? 'rgba(248,113,113,0.8)'
-        : pollen[0]?.level >= 3
-          ? 'rgba(251,191,36,0.8)'
-          : pollen[0]?.level >= 2
-            ? 'rgba(250,204,21,0.7)'
-            : 'rgba(74,222,128,0.7)'
-  );
-  let pollenHeroTextColor = $derived(
-    pollen.length === 0 ? 'text-white/35' : levelColor(pollen[0]?.level ?? 0)
-  );
-
-  // Stündliche Pollenbelastung (Fake-Daten)
-  let pollenHourly = [
-    { hour: '06:00', level: 1 },
-    { hour: '09:00', level: 2 },
-    { hour: '12:00', level: 3 },
-    { hour: '15:00', level: 4 },
-    { hour: '18:00', level: 3 },
-    { hour: '21:00', level: 2 }
-  ];
+  let pollenHeroLevel = $derived(pollen[0]?.level ?? 0);
+  let pollenLevelStyle = $derived(getPollenLevelStyle(pollenHeroLevel));
+  let pollenHeroAccentColor = $derived(`var(${pollenLevelStyle.accentVar})`);
+  let pollenHeroTextColor = $derived(pollenLevelStyle.textColor);
 </script>
 
 <WeatherCard showForecast />
@@ -143,7 +127,7 @@
     <StatCard
       icon={Droplets}
       title="Niederschlag"
-      accentColor="rgba(96,165,250,0.8)"
+      accentColor="var(--accent-rain)"
       hero={`${actualRainRate}`}
       heroUnit={isRaining === 'on' ? 'mm' : 'Keiner'}
       stats={[
@@ -158,7 +142,7 @@
     <StatCard
       icon={Wind}
       title="Wind & Druck"
-      accentColor="rgba(148,163,184,0.8)"
+      accentColor="var(--accent-wind)"
       hero={windSpeed}
       heroUnit="km/h"
       heroIcon={Navigation}
@@ -174,7 +158,9 @@
     <StatCard
       icon={Sun}
       title="Sonne & UV"
-      accentColor={currentUvLevel?.accentRgba ?? 'rgba(250,204,21,0.5)'}
+      accentColor={currentUvLevel?.accentVar
+        ? `var(${currentUvLevel.accentVar})`
+        : 'var(--accent-uv-mid)'}
       hero={`${uv}`}
       heroUnit={currentUvLevel?.label ?? ''}
       heroAccent={currentUvLevel?.color}
@@ -193,16 +179,11 @@
       hero={`${pollenActive}`}
       heroUnit={pollenHeroUnit}
       heroAccent={pollenHeroTextColor}
-      stats={pollen.length > 0
-        ? pollen.slice(0, 2).map((entry) => ({
-            label: entry.name,
-            value: entry.levelName,
-            accent: levelColor(entry.level)
-          }))
-        : [
-            { label: 'Peak-Zeit', value: pollenHourly[3].hour },
-            { label: 'Belastung', value: 'Moderat' }
-          ]}
+      stats={pollen.slice(0, 3).map((entry) => ({
+        label: entry.name,
+        value: entry.levelName,
+        accent: getPollenLevelStyle(entry.level).textColor
+      }))}
     />
   </div>
 </div>

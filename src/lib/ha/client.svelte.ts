@@ -19,113 +19,113 @@ class HaClient {
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
   connect() {
-  if (this.ws) return;
+    if (this.ws) return;
 
-  this.status = 'connecting';
-  const url = `${PUBLIC_HA_URL.replace(/^http/, 'ws')}/api/websocket`;
-  this.ws = new WebSocket(url);
+    this.status = 'connecting';
+    const url = `${PUBLIC_HA_URL.replace(/^http/, 'ws')}/api/websocket`;
+    this.ws = new WebSocket(url);
 
-  this.ws.onopen = () => {
-  this.status = 'authenticating';
-  };
+    this.ws.onopen = () => {
+      this.status = 'authenticating';
+    };
 
-  this.ws.onmessage = (event) => {
-  this.handleMessage(JSON.parse(event.data));
-  };
+    this.ws.onmessage = (event) => {
+      this.handleMessage(JSON.parse(event.data));
+    };
 
-  this.ws.onclose = () => {
-  this.ws = null;
-  this.status = 'disconnected';
-  this.scheduleReconnect();
-  };
+    this.ws.onclose = () => {
+      this.ws = null;
+      this.status = 'disconnected';
+      this.scheduleReconnect();
+    };
 
-  this.ws.onerror = () => {
-  this.status = 'error';
-  };
+    this.ws.onerror = () => {
+      this.status = 'error';
+    };
   }
 
   disconnect() {
-  if (this.reconnectTimer) {
-  clearTimeout(this.reconnectTimer);
-  this.reconnectTimer = null;
-  }
-  this.ws?.close();
-  this.ws = null;
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    this.ws?.close();
+    this.ws = null;
   }
 
   private handleMessage(msg: Record<string, unknown>) {
-  switch (msg.type) {
-  case 'auth_required':
-  this.send({ type: 'auth', access_token: PUBLIC_HA_TOKEN });
-  break;
+    switch (msg.type) {
+      case 'auth_required':
+        this.send({ type: 'auth', access_token: PUBLIC_HA_TOKEN });
+        break;
 
-  case 'auth_ok':
-  this.status = 'connected';
-  this.fetchStates();
-  this.subscribeEvents();
-  break;
+      case 'auth_ok':
+        this.status = 'connected';
+        this.fetchStates();
+        this.subscribeEvents();
+        break;
 
-  case 'auth_invalid':
-  this.status = 'error';
-  this.ws?.close();
-  break;
+      case 'auth_invalid':
+        this.status = 'error';
+        this.ws?.close();
+        break;
 
-  case 'result': {
-  const result = msg as { id: number; success: boolean; result: unknown };
-  if (result.success && Array.isArray(result.result)) {
-  // Response to get_states
-  const incoming: Record<string, HaState> = {};
-  for (const s of result.result as HaState[]) {
-  incoming[s.entity_id] = s;
-  }
-  this.states = incoming;
-  }
-  break;
-  }
+      case 'result': {
+        const result = msg as { id: number; success: boolean; result: unknown };
+        if (result.success && Array.isArray(result.result)) {
+          // Response to get_states
+          const incoming: Record<string, HaState> = {};
+          for (const s of result.result as HaState[]) {
+            incoming[s.entity_id] = s;
+          }
+          this.states = incoming;
+        }
+        break;
+      }
 
-  case 'event': {
-  const event = msg as { event: { data: { new_state: HaState | null } } };
-  const newState = event.event?.data?.new_state;
-  if (newState) {
-  this.states = { ...this.states, [newState.entity_id]: newState };
-  }
-  break;
-  }
-  }
+      case 'event': {
+        const event = msg as { event: { data: { new_state: HaState | null } } };
+        const newState = event.event?.data?.new_state;
+        if (newState) {
+          this.states = { ...this.states, [newState.entity_id]: newState };
+        }
+        break;
+      }
+    }
   }
 
   private fetchStates() {
-  this.send({ id: this.msgId++, type: 'get_states' });
+    this.send({ id: this.msgId++, type: 'get_states' });
   }
 
   private subscribeEvents() {
-  this.send({ id: this.msgId++, type: 'subscribe_events', event_type: 'state_changed' });
+    this.send({ id: this.msgId++, type: 'subscribe_events', event_type: 'state_changed' });
   }
 
   getEntity(entityId: string): HaState | undefined {
-  return this.states[entityId];
+    return this.states[entityId];
   }
 
   getState(entityId: string): string | null {
-  const entity = this.getEntity(entityId);
-  if (!entity || entity.state === 'unavailable' || entity.state === 'unknown') return null;
-  return entity.state;
+    const entity = this.getEntity(entityId);
+    if (!entity || entity.state === 'unavailable' || entity.state === 'unknown') return null;
+    return entity.state;
   }
 
   getNumericState(entityId: string, decimals = 1): string | null {
-  const val = parseFloat(this.getEntity(entityId)?.state ?? '');
-  return isNaN(val) ? null : val.toFixed(decimals);
+    const val = parseFloat(this.getEntity(entityId)?.state ?? '');
+    return isNaN(val) ? null : val.toFixed(decimals);
   }
 
   private send(msg: Record<string, unknown>) {
-  this.ws?.send(JSON.stringify(msg));
+    this.ws?.send(JSON.stringify(msg));
   }
 
   private scheduleReconnect() {
-  this.reconnectTimer = setTimeout(() => {
-  this.reconnectTimer = null;
-  this.connect();
-  }, 5000);
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
+      this.connect();
+    }, 5000);
   }
 }
 

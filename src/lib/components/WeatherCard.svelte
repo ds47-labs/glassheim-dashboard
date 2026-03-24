@@ -81,7 +81,7 @@
   });
 </script>
 
-<div class="glass-panel-elevated animate-fade-up rounded-2xl p-10">
+<div class="glass-panel-elevated rounded-2xl p-10">
   <div class="flex items-center justify-between gap-10">
     <div class="flex-1">
       <div class="mb-8 flex items-end gap-8">
@@ -116,8 +116,7 @@
         {#each forecast as data, i (data.day)}
           {@const ForecastIcon = data.icon}
           <div
-            class="forecast-card animate-fade-up flex w-36 flex-col items-center justify-center gap-4 rounded-xl p-5"
-            style="animation-delay: {100 + i * 60}ms"
+            class="forecast-card flex w-36 flex-col items-center justify-center gap-4 rounded-xl p-5"
           >
             <div class="text-xs font-medium tracking-[0.18em] text-white/80 uppercase">
               {data.day}

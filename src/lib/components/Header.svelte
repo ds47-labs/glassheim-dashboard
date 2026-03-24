@@ -18,8 +18,8 @@
 	let time = $derived(ha.getState('sensor.time') ?? '--');
 </script>
 
-<header class="flex items-center justify-between px-12 py-5 border-b border-white/[0.055]">
-	<div class="shrink-0 text-3xl leading-none font-extralight tracking-[0.25em] text-[var(--accent-warm)] uppercase">
+<header class="flex items-center justify-between px-12 py-5 border-b border-white/5.5">
+	<div class="shrink-0 text-3xl leading-none font-extralight tracking-[0.25em] text-(--accent-warm) uppercase">
 		Hamavil
 	</div>
 
@@ -32,12 +32,12 @@
 				href={item.href}
 				class="relative flex items-center rounded-lg px-3 py-1.5 text-base leading-none tracking-wide transition-all duration-200
 				{currentPath === item.href
-					? 'text-white bg-white/[0.13]'
-					: 'text-white/38 hover:text-white/75 hover:bg-white/[0.06]'}"
+					? 'text-white bg-white/13'
+					: 'text-white/38 hover:text-white/75 hover:bg-white/6'}"
 			>
 				{item.label}
 				{#if currentPath === item.href}
-					<span class="absolute right-2 bottom-1 left-2 h-px rounded-full bg-[var(--accent-warm)]/40"></span>
+					<span class="absolute right-2 bottom-1 left-2 h-px rounded-full bg-(--accent-warm)/40"></span>
 				{/if}
 			</a>
 		{/each}
