@@ -8,7 +8,9 @@
     CloudRain,
     CloudLightning,
     CloudSnow,
-    Wind
+    Wind,
+    ArrowUp,
+    ArrowDown
   } from 'lucide-svelte';
   import type { Icon } from 'lucide-svelte';
 
@@ -46,24 +48,21 @@
     return haConditionMap[state ?? ''] ?? { icon: CloudSun, label: state ?? '--' };
   });
 
-  let todayForecast = $derived(
-    (
-      ha.getEntity('sensor.daily_weather_data_openweathermap')?.attributes?.forecast_data as
-        | Record<string, unknown>[]
-        | undefined
-    )?.[0]
-  );
-  let todayHigh = $derived(
-    todayForecast ? `${Math.round(todayForecast.temperature as number)}` : '--'
-  );
-  let todayLow = $derived(todayForecast ? `${Math.round(todayForecast.templow as number)}` : '--');
+  let weatherAnimation = $derived.by(() => {
+    const state = ha.getState('sensor.openweathermap_condition');
+    if (state === 'sunny' || state === 'clear-night') return 'animate-spin-slow';
+    if (state?.includes('wind')) return 'animate-sway';
+    return 'animate-float';
+  });
+  let todayHigh = $derived(ha.getState('sensor.weather_temperature_max') ?? '--');
+  let todayLow = $derived(ha.getState('sensor.weather_temperature_min') ?? '--');
 
   let forecast = $derived.by<ForecastDay[]>(() => {
     if (!showForecast) return [];
     const raw = ha.getEntity('sensor.daily_weather_data_openweathermap')?.attributes
       ?.forecast_data as Record<string, unknown>[] | undefined;
     if (!raw?.length) return [];
-    return raw.slice(0, 5).map((d) => {
+    return raw.slice(1, 6).map((d) => {
       const condition = haConditionMap[d.condition as string] ?? haConditionMap['partlycloudy'];
       const date = new Date(d.datetime as string);
       const day = date
@@ -87,7 +86,7 @@
       <div class="mb-8 flex items-end gap-6">
         {#if weatherCondition.icon}
           {@const ConditionIcon = weatherCondition.icon}
-          <div class="-mb-4 text-white/60">
+          <div class="-mb-4 text-white/60 {weatherAnimation}">
             <ConditionIcon strokeWidth={0.6} class="h-64 w-64" />
           </div>
         {/if}
@@ -102,13 +101,20 @@
       </div>
 
       <div class="ml-5 flex items-center gap-5 text-lg font-light text-white/55">
-        <span>Gefühlt <span class="text-white/70 tabular-nums">{feelsLike}°C</span></span>
+        <span>Gefühlt</span>
+        <span class="text-white/70 tabular-nums">{feelsLike} °C</span>
         <span class="text-white/20">·</span>
-        <span class="tabular-nums"
-          ><span class="text-white/70">{todayHigh}°</span>
-          <span class="mx-2 text-white/25">/</span><span class="text-white/55">{todayLow}°</span
-          ></span
-        >
+        <span class="flex items-center gap-2 tabular-nums">
+          <span class="flex items-center gap-1">
+            <ArrowUp size={16} strokeWidth={2} class="text-white/50" />
+            <span class="text-white/70">{todayHigh} °C</span>
+          </span>
+          <span class="text-white/25">/</span>
+          <span class="flex items-center gap-1">
+            <ArrowDown size={16} strokeWidth={2} class="text-white/50" />
+            <span class="text-white/55">{todayLow} °C</span>
+          </span>
+        </span>
       </div>
     </div>
 
@@ -120,7 +126,7 @@
             class="forecast-card animate-fade-up flex w-36 flex-col items-center justify-center gap-4 rounded-xl p-5"
             style="animation-delay: {100 + i * 60}ms"
           >
-            <div class="text-xs font-medium tracking-[0.18em] text-white/80 uppercase">
+            <div class="text-sm font-medium tracking-[0.18em] text-white/80 uppercase">
               {data.day}
             </div>
             <div class="text-white/75">
@@ -132,7 +138,7 @@
                 <span class="text-white/30">/</span>
                 <span class="text-white/55">{data.low}°</span>
               </div>
-              <div class="text-xs font-light tracking-wider text-white/50">
+              <div class="text-sm font-light tracking-wider text-white/50">
                 {data.description}
               </div>
             </div>

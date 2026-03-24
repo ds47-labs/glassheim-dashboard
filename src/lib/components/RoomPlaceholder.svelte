@@ -6,10 +6,10 @@
   <div class="glass-panel rounded-2xl p-8">
     <div class="flex items-end justify-between">
       <div>
-        <p class="mb-1.5 text-xs tracking-[0.2em] text-white/25 uppercase">Raum</p>
+        <p class="mb-1.5 text-sm tracking-[0.2em] text-white/25 uppercase">Raum</p>
         <h2 class="text-3xl font-extralight tracking-wide text-white/80">{name}</h2>
       </div>
-      <p class="text-xs tracking-[0.15em] text-white/18 uppercase">In Vorbereitung</p>
+      <p class="text-sm tracking-[0.15em] text-white/18 uppercase">In Vorbereitung</p>
     </div>
   </div>
 
