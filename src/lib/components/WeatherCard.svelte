@@ -114,25 +114,28 @@
     </div>
 
     {#if forecast.length > 0}
-      <div class="flex shrink-0 items-stretch gap-2.5">
+      <div class="flex shrink-0 items-stretch gap-3">
         {#each forecast as data, i (data.day)}
           {@const ForecastIcon = data.icon}
           <div
-            class="glass-panel animate-fade-up flex w-34 flex-col items-center gap-3 rounded-xl p-4 transition-colors duration-200 hover:bg-white/10"
+            class="forecast-card animate-fade-up flex w-32 flex-col items-center gap-3.5 rounded-2xl p-5 backdrop-blur-md transition-all duration-300 hover:shadow-lg hover:scale-105"
             style="animation-delay: {100 + i * 60}ms"
           >
-            <div class="text-xs font-medium tracking-[0.2em] text-white/38 uppercase">
+            <div class="text-xs font-medium tracking-[0.18em] text-white/80 uppercase">
               {data.day}
             </div>
-            <div class="text-white/65">
-              <ForecastIcon size={36} strokeWidth={0.85} />
+            <div class="text-white/75">
+              <ForecastIcon size={40} strokeWidth={0.85} />
             </div>
-            <div class="text-sm font-light text-white tabular-nums">
-              {data.high}° <span class="text-white/22">/</span>
-              {data.low}°
-            </div>
-            <div class="text-center text-[0.65rem] tracking-wider text-white/30 uppercase">
-              {data.description}
+            <div class="flex flex-col items-center gap-1">
+              <div class="text-sm font-light text-white tabular-nums">
+                <span class="font-extralight">{data.high}</span><span class="text-white/32">°</span>
+                <span class="text-white/32">/</span>
+                <span class="text-white/60">{data.low}°</span>
+              </div>
+              <div class="text-[0.65rem] tracking-wide text-white/40">
+                {data.description}
+              </div>
             </div>
           </div>
         {/each}

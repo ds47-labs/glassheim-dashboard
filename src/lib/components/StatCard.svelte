@@ -31,7 +31,8 @@
 </script>
 
 <div
-  class="glass-panel relative h-full overflow-hidden rounded-2xl"
+  class="glass-panel animate-fade-up relative h-full rounded-2xl"
+  style="animation-delay: var(--delay, 0ms)"
 >
   <div
     class="absolute top-4 bottom-4 left-2 rounded-full"

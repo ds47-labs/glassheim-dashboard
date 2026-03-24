@@ -129,7 +129,7 @@
 <WeatherCard showForecast />
 
 <div class="grid shrink-0 grid-cols-4 gap-3.5">
-  <div style="animation-delay: 80ms" class="animate-fade-up">
+  <div style="animation-delay: 80ms">
     <StatCard
       icon={Droplets}
       title="Niederschlag"
@@ -144,7 +144,7 @@
     />
   </div>
 
-  <div style="animation-delay: 150ms" class="animate-fade-up">
+  <div style="animation-delay: 150ms">
     <StatCard
       icon={Wind}
       title="Wind & Druck"
@@ -160,7 +160,7 @@
     />
   </div>
 
-  <div style="animation-delay: 220ms" class="animate-fade-up">
+  <div style="animation-delay: 220ms">
     <StatCard
       icon={Sun}
       title="Sonne & UV"
@@ -175,7 +175,7 @@
     />
   </div>
 
-  <div style="animation-delay: 290ms" class="animate-fade-up">
+  <div style="animation-delay: 290ms">
     <StatCard
       icon={Flower2}
       title="Pollenflug"
