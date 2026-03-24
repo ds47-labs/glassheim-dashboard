@@ -82,33 +82,31 @@
 </script>
 
 <div class="glass-panel-elevated animate-fade-up rounded-2xl p-10">
-  <div class="flex items-center justify-between gap-4">
+  <div class="flex items-center justify-between gap-10">
     <div class="flex-1">
-      <div class="mb-5 flex items-center gap-6">
+      <div class="mb-8 flex items-end gap-8">
         {#if weatherCondition.icon}
           {@const ConditionIcon = weatherCondition.icon}
           <div class="text-white/75">
             <ConditionIcon strokeWidth={0.75} class="h-28 w-28" />
           </div>
         {/if}
-        <div class="flex flex-col">
+        <div class="flex flex-col pb-2">
           <div class="text-9xl leading-none font-extralight tracking-tight text-white tabular-nums">
-            {temperature}<span class="mt-1 inline-block align-top text-4xl font-light text-white/55"
-              >°C</span
-            >
+            {temperature}<span class="text-4xl font-light text-white/55 ml-2">°C</span>
           </div>
-          <div class="mt-3 text-2xl font-light tracking-wide text-white/75">
+          <div class="mt-4 text-2xl font-light text-white/75">
             {weatherCondition.label}
           </div>
         </div>
       </div>
 
-      <div class="ml-0.5 flex items-center gap-3 text-sm tracking-wider text-white/38">
-        <span>Gefühlt <span class="text-white/60 tabular-nums">{feelsLike}°C</span></span>
-        <span class="text-white/15">·</span>
+      <div class="flex items-center gap-5 text-sm font-light text-white/55">
+        <span>Gefühlt <span class="text-white/70 tabular-nums">{feelsLike}°C</span></span>
+        <span class="text-white/20">·</span>
         <span class="tabular-nums"
-          ><span class="text-white/60">{todayHigh}°</span>
-          <span class="mx-1 text-white/20">/</span>{todayLow}°</span
+          ><span class="text-white/70">{todayHigh}°</span>
+          <span class="text-white/25 mx-2">/</span><span class="text-white/55">{todayLow}°</span></span
         >
       </div>
     </div>
@@ -118,7 +116,7 @@
         {#each forecast as data, i (data.day)}
           {@const ForecastIcon = data.icon}
           <div
-            class="forecast-card animate-fade-up flex w-32 flex-col items-center gap-3.5 rounded-2xl p-5 backdrop-blur-md transition-all duration-300 hover:shadow-lg hover:scale-105"
+            class="forecast-card animate-fade-up flex w-36 flex-col items-center justify-center gap-4 rounded-xl p-5"
             style="animation-delay: {100 + i * 60}ms"
           >
             <div class="text-xs font-medium tracking-[0.18em] text-white/80 uppercase">
@@ -127,13 +125,13 @@
             <div class="text-white/75">
               <ForecastIcon size={40} strokeWidth={0.85} />
             </div>
-            <div class="flex flex-col items-center gap-1">
-              <div class="text-sm font-light text-white tabular-nums">
-                <span class="font-extralight">{data.high}</span><span class="text-white/32">°</span>
-                <span class="text-white/32">/</span>
-                <span class="text-white/60">{data.low}°</span>
+            <div class="flex flex-col items-center gap-2 text-center">
+              <div class="text-base font-light text-white tabular-nums">
+                <span class="font-extralight">{data.high}</span><span class="text-white/35">°</span>
+                <span class="text-white/30">/</span>
+                <span class="text-white/55">{data.low}°</span>
               </div>
-              <div class="text-[0.65rem] tracking-wide text-white/40">
+              <div class="text-xs tracking-wider text-white/50 font-light">
                 {data.description}
               </div>
             </div>

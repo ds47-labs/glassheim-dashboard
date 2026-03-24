@@ -124,6 +124,16 @@
   let pollenHeroTextColor = $derived(
     pollen.length === 0 ? 'text-white/35' : levelColor(pollen[0]?.level ?? 0)
   );
+
+  // Stündliche Pollenbelastung (Fake-Daten)
+  let pollenHourly = [
+    { hour: '06:00', level: 1 },
+    { hour: '09:00', level: 2 },
+    { hour: '12:00', level: 3 },
+    { hour: '15:00', level: 4 },
+    { hour: '18:00', level: 3 },
+    { hour: '21:00', level: 2 }
+  ];
 </script>
 
 <WeatherCard showForecast />
@@ -184,12 +194,15 @@
       heroUnit={pollenHeroUnit}
       heroAccent={pollenHeroTextColor}
       stats={pollen.length > 0
-        ? pollen.map((entry) => ({
+        ? pollen.slice(0, 2).map((entry) => ({
             label: entry.name,
             value: entry.levelName,
             accent: levelColor(entry.level)
           }))
-        : [{ label: 'Status', value: 'Keine Belastung' }]}
+        : [
+            { label: 'Peak-Zeit', value: pollenHourly[3].hour },
+            { label: 'Belastung', value: 'Moderat' }
+          ]}
     />
   </div>
 </div>
