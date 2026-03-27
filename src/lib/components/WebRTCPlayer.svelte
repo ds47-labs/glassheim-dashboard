@@ -17,7 +17,7 @@
     style="display: block; min-height: 0; min-width: 0;"
     allow="autoplay"
     sandbox="allow-same-origin allow-scripts allow-presentation"
-    loading="lazy"
+    loading="eager"
   ></iframe>
 {:else}
   <!-- Video mode: Native MP4 streaming -->
@@ -27,6 +27,7 @@
     {muted}
     playsinline
     controls={false}
+    preload="auto"
   >
     <source src={streamUrl} type="video/mp4" />
   </video>
