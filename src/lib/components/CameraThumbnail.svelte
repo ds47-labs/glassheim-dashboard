@@ -1,4 +1,6 @@
 <script lang="ts">
+  import WebRTCPlayer from './WebRTCPlayer.svelte';
+
   interface Props {
     name: string;
     location: string;
@@ -27,13 +29,13 @@
   ></div>
 
   <div
-    class="glass-panel animate-fade-up relative aspect-square overflow-hidden rounded-lg"
+    class="glass-panel animate-fade-up relative aspect-square overflow-hidden rounded-lg flex"
     style="animation-delay: {50 + index * 30}ms"
   >
     <!-- Thumbnail video -->
-    <video class="h-full w-full bg-black object-contain" muted playsinline>
-      <source src={streamUrl} type="application/x-mpegURL" />
-    </video>
+    <div class="flex-1">
+      <WebRTCPlayer {streamUrl} muted={true} />
+    </div>
 
     <div
       class="absolute inset-0 flex flex-col justify-start bg-linear-to-t from-black/70 via-transparent to-transparent p-2.5"

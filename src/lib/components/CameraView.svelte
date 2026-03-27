@@ -1,15 +1,14 @@
 <script lang="ts">
   import { Volume2, Mic, Settings } from 'lucide-svelte';
+  import WebRTCPlayer from './WebRTCPlayer.svelte';
 
   interface Props {
-    name: string;
-    location: string;
     streamUrl: string;
+    iframeUrl?: string;
     isLoading?: boolean;
-    showControls?: boolean;
   }
 
-  let { name, location, streamUrl, isLoading = false, showControls = true }: Props = $props();
+  let { streamUrl, iframeUrl, isLoading = false }: Props = $props();
 </script>
 
 <div class="group relative h-full overflow-hidden rounded-2xl">
@@ -37,16 +36,7 @@
     {/if}
 
     <!-- Video stream -->
-    <video
-      class="h-full w-full bg-black object-contain"
-      controls={false}
-      autoplay
-      muted
-      playsinline
-    >
-      <source src={streamUrl} type="application/x-mpegURL" />
-      Your browser does not support the video tag.
-    </video>
+    <WebRTCPlayer streamUrl={iframeUrl || streamUrl} useIframe={true} />
 
     <!-- FOCUS indicator -->
     <div class="pointer-events-none absolute top-6 left-6 z-30">
@@ -62,40 +52,6 @@
         </div>
       </div>
     </div>
-
-    {#if showControls}
-      <!-- Controls overlay -->
-      <div
-        class="absolute right-0 bottom-0 left-0 z-20 bg-linear-to-t from-black/85 via-black/50 to-transparent p-5"
-      >
-        <div class="flex items-end justify-between gap-4">
-          <div class="min-w-0 flex-1">
-            <h3 class="truncate text-base font-light text-white">{name}</h3>
-            <p class="mt-1 text-xs tracking-wider text-white/40 uppercase">{location}</p>
-          </div>
-          <div class="flex shrink-0 gap-2">
-            <button
-              class="rounded-md bg-white/8 p-1.5 text-white/60 backdrop-blur transition-colors hover:bg-white/15 hover:text-white/80"
-              title="Microphone"
-            >
-              <Mic class="h-3.5 w-3.5" strokeWidth={1.5} />
-            </button>
-            <button
-              class="rounded-md bg-white/8 p-1.5 text-white/60 backdrop-blur transition-colors hover:bg-white/15 hover:text-white/80"
-              title="Volume"
-            >
-              <Volume2 class="h-3.5 w-3.5" strokeWidth={1.5} />
-            </button>
-            <button
-              class="rounded-md bg-white/8 p-1.5 text-white/60 backdrop-blur transition-colors hover:bg-white/15 hover:text-white/80"
-              title="Settings"
-            >
-              <Settings class="h-3.5 w-3.5" strokeWidth={1.5} />
-            </button>
-          </div>
-        </div>
-      </div>
-    {/if}
   </div>
 </div>
 

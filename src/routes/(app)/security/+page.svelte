@@ -6,7 +6,8 @@
     id: string;
     name: string;
     location: string;
-    streamUrl: string;
+    streamUrl: string; // HLS URL for thumbnails
+    iframeUrl: string; // stream.html for focus
   }
 
   const cameras: Camera[] = [
@@ -14,61 +15,71 @@
       id: '1',
       name: 'CAM 1',
       location: 'HÜHNER',
-      streamUrl: 'https://go2rtc.ds47.dev/stream.html?src=garden_chicken'
+      streamUrl: 'https://go2rtc.ds47.dev/api/stream.mp4?src=garden_chicken_low',
+      iframeUrl: 'https://go2rtc.ds47.dev/stream.html?src=garden_chicken'
     },
     {
       id: '2',
       name: 'CAM 2',
       location: 'GARTENTOR',
-      streamUrl: 'https://go2rtc.ds47.dev/stream.html?src=garden_door'
+      streamUrl: 'https://go2rtc.ds47.dev/api/stream.mp4?src=garden_door_low',
+      iframeUrl: 'https://go2rtc.ds47.dev/stream.html?src=garden_door'
     },
     {
       id: '3',
       name: 'CAM 3',
       location: 'GARTEN',
-      streamUrl: 'https://go2rtc.ds47.dev/stream.html?src=garden_garden'
+      streamUrl: 'https://go2rtc.ds47.dev/api/stream.mp4?src=garden_garden_low',
+      iframeUrl: 'https://go2rtc.ds47.dev/stream.html?src=garden_garden'
     },
     {
       id: '4',
       name: 'CAM 4',
       location: 'GRILLPLATZ',
-      streamUrl: 'https://go2rtc.ds47.dev/stream.html?src=garden_sluice_dining'
+      streamUrl: 'https://go2rtc.ds47.dev/api/stream.mp4?src=garden_sluice_dining_low',
+      iframeUrl: 'https://go2rtc.ds47.dev/stream.html?src=garden_sluice_dining'
     },
     {
       id: '5',
       name: 'CAM 5',
       location: 'CARPORT',
-      streamUrl: 'https://go2rtc.ds47.dev/stream.html?src=garden_carport'
+      streamUrl: 'https://go2rtc.ds47.dev/api/stream.mp4?src=garden_carport_low',
+      iframeUrl: 'https://go2rtc.ds47.dev/stream.html?src=garden_carport'
     },
     {
       id: '6',
       name: 'CAM 6',
       location: 'WOHNZIMMER',
-      streamUrl: 'https://go2rtc.ds47.dev/stream.html?src=living_room'
+      streamUrl: 'https://go2rtc.ds47.dev/api/stream.mp4?src=living_room_low',
+      iframeUrl: 'https://go2rtc.ds47.dev/stream.html?src=living_room'
     },
     {
       id: '7',
       name: 'CAM 7',
       location: 'SCHLEUSE',
-      streamUrl: 'https://go2rtc.ds47.dev/stream.html?src=sluice'
+      streamUrl: 'https://go2rtc.ds47.dev/api/stream.mp4?src=sluice_low',
+      iframeUrl: 'https://go2rtc.ds47.dev/stream.html?src=sluice'
     },
     {
       id: '8',
       name: 'CAM 8',
       location: 'GARAGE',
-      streamUrl: 'https://go2rtc.ds47.dev/stream.html?src=garage'
+      streamUrl: 'https://go2rtc.ds47.dev/api/stream.mp4?src=garage_low',
+      iframeUrl: 'https://go2rtc.ds47.dev/stream.html?src=garage'
     },
     {
       id: '9',
       name: 'CAM 9',
       location: 'GANG',
-      streamUrl: 'https://go2rtc.ds47.dev/stream.html?src=corridor'
+      streamUrl: 'https://go2rtc.ds47.dev/api/stream.mp4?src=corridor_low',
+      iframeUrl: 'https://go2rtc.ds47.dev/stream.html?src=corridor'
     },
     {
       id: '10',
       name: 'CAM 10',
       location: 'KÜCHE',
-      streamUrl: 'https://go2rtc.ds47.dev/stream.html?src=kitchen'
+      streamUrl: 'https://go2rtc.ds47.dev/api/stream.mp4?src=kitchen_low',
+      iframeUrl: 'https://go2rtc.ds47.dev/stream.html?src=kitchen'
     }
   ];
 
@@ -92,8 +103,9 @@
       name={focusedCamera.name}
       location={focusedCamera.location}
       streamUrl={focusedCamera.streamUrl}
+      iframeUrl={focusedCamera.iframeUrl}
       {isLoading}
-      showControls={true}
+      showControls={false}
     />
   </div>
 

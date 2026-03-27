@@ -5,13 +5,25 @@ VERSION  := $(shell git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' ||
 
 .PHONY: build push run dev login dev-build release
 
-release: ## Usage: make release TAG=v1.2.3
-ifndef TAG
-	$(error TAG is required, e.g. make release TAG=v1.2.3)
-endif
+release: ## Usage: make release [TAG=v1.2.3] or make release (auto-bumps patch)
+ifdef TAG
 	git tag $(TAG)
 	git push origin $(TAG)
 	$(MAKE) push VERSION=$(shell echo $(TAG) | sed 's/^v//')
+else
+	@echo "No TAG specified, auto-bumping patch version..."
+	@bash -c 'LAST_TAG=$$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.1.0"); \
+		VERSION=$$(echo $$LAST_TAG | sed "s/^v//; s/^\\.//" ); \
+		MAJOR=$$(echo $$VERSION | cut -d. -f1); \
+		MINOR=$$(echo $$VERSION | cut -d. -f2); \
+		PATCH=$$(echo $$VERSION | cut -d. -f3); \
+		NEW_PATCH=$$((PATCH + 1)); \
+		NEW_VERSION=$$MAJOR.$$MINOR.$$NEW_PATCH; \
+		NEW_TAG=v$$NEW_VERSION; \
+		echo "Creating release: $$NEW_TAG"; \
+		git tag $$NEW_TAG && git push origin $$NEW_TAG && \
+		$(MAKE) push VERSION=$$NEW_VERSION'
+endif
 
 build:
 	docker build --build-arg BUILD_VERSION=$(VERSION) -t $(IMAGE):$(VERSION) -t $(IMAGE):latest .
