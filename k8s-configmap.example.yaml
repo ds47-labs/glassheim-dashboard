@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: glasheim-dashboard-config
+  namespace: home-automation
+data:
+  config.js: |
+    // Auto-generated config file - DO NOT EDIT
+    window.__config__ = {
+      PUBLIC_HA_URL: 'http://home-assistant:8123',
+      PUBLIC_HA_TOKEN: 'your-ha-token-here'
+    };
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: glasheim-dashboard
+  namespace: home-automation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: glasheim-dashboard
+  template:
+    metadata:
+      labels:
+        app: glasheim-dashboard
+    spec:
+      containers:
+      - name: app
+        image: git.ds47.dev/calautigo/glasheim-dashboard:0.2.0
+        ports:
+        - containerPort: 3000
+        env:
+        - name: PUBLIC_HA_URL
+          value: "http://home-assistant:8123"
+        - name: PUBLIC_HA_TOKEN
+          value: "your-ha-token-here"
+        volumeMounts:
+        - name: config
+          mountPath: /app/build/client/config.js
+          subPath: config.js
+      volumes:
+      - name: config
+        configMap:
+          name: glasheim-dashboard-config

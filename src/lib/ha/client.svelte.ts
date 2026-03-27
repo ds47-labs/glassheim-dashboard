@@ -10,6 +10,15 @@ export interface HaState {
 
 type ConnectionStatus = 'disconnected' | 'connecting' | 'authenticating' | 'connected' | 'error';
 
+declare global {
+  interface Window {
+    __config__?: {
+      PUBLIC_HA_URL?: string;
+      PUBLIC_HA_TOKEN?: string;
+    };
+  }
+}
+
 class HaClient {
   status = $state<ConnectionStatus>('disconnected');
   states = $state<Record<string, HaState>>({});
@@ -17,12 +26,25 @@ class HaClient {
   private ws: WebSocket | null = null;
   private msgId = 1;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private haUrl: string;
+  private haToken: string;
+
+  constructor() {
+    // Get config from window.__config__ (runtime), fall back to PUBLIC_ env vars (build-time)
+    if (typeof window !== 'undefined' && window.__config__) {
+      this.haUrl = window.__config__.PUBLIC_HA_URL || PUBLIC_HA_URL;
+      this.haToken = window.__config__.PUBLIC_HA_TOKEN || PUBLIC_HA_TOKEN;
+    } else {
+      this.haUrl = PUBLIC_HA_URL;
+      this.haToken = PUBLIC_HA_TOKEN;
+    }
+  }
 
   connect() {
     if (this.ws) return;
 
     this.status = 'connecting';
-    const url = `${PUBLIC_HA_URL.replace(/^http/, 'ws')}/api/websocket`;
+    const url = `${this.haUrl.replace(/^http/, 'ws')}/api/websocket`;
     this.ws = new WebSocket(url);
 
     this.ws.onopen = () => {
@@ -56,7 +78,7 @@ class HaClient {
   private handleMessage(msg: Record<string, unknown>) {
     switch (msg.type) {
       case 'auth_required':
-        this.send({ type: 'auth', access_token: PUBLIC_HA_TOKEN });
+        this.send({ type: 'auth', access_token: this.haToken });
         break;
 
       case 'auth_ok':
