@@ -1,3 +1,4 @@
+# ConfigMap with runtime configuration
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,6 +12,7 @@ data:
       PUBLIC_HA_TOKEN: 'your-ha-token-here'
     };
 ---
+# Deployment with readOnlyRootFilesystem + ConfigMap-mounted config
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,19 +30,36 @@ spec:
     spec:
       containers:
       - name: app
-        image: git.ds47.dev/calautigo/glasheim-dashboard:0.2.0
+        image: git.ds47.dev/calautigo/glasheim-dashboard:0.2.1
         ports:
         - containerPort: 3000
         env:
-        - name: PUBLIC_HA_URL
-          value: "http://home-assistant:8123"
-        - name: PUBLIC_HA_TOKEN
-          value: "your-ha-token-here"
+        - name: NODE_ENV
+          value: "production"
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
         volumeMounts:
+        # Mount config.js from ConfigMap
         - name: config
           mountPath: /app/build/client/config.js
           subPath: config.js
+        # Temp dirs for Node.js
+        - name: tmp
+          mountPath: /tmp
+        - name: node-cache
+          mountPath: /home/node/.cache
       volumes:
+      # ConfigMap with the config
       - name: config
         configMap:
           name: glasheim-dashboard-config
+          defaultMode: 0444
+      # emptyDir for /tmp
+      - name: tmp
+        emptyDir: {}
+      # emptyDir for Node cache
+      - name: node-cache
+        emptyDir: {}
