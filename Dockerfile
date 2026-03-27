@@ -12,8 +12,15 @@ ENV BUILD_VERSION=$BUILD_VERSION
 RUN pnpm build
 
 
-FROM nginx:alpine
+FROM node:22-alpine
 
-COPY --from=builder /app/build /usr/share/nginx/html
+WORKDIR /app
 
-EXPOSE 80
+COPY --from=builder /app/build ./build
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
+
+EXPOSE 3000
+
+ENV NODE_ENV=production
+CMD ["node", "build"]

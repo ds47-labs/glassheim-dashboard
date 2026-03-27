@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PUBLIC_HA_URL: ${PUBLIC_HA_URL:-http://localhost:8123}
+        PUBLIC_HA_TOKEN: ${PUBLIC_HA_TOKEN}
+        BUILD_VERSION: ${BUILD_VERSION:-dev}
+    ports:
+      - "80:80"
+    environment:
+      - PUBLIC_HA_URL=${PUBLIC_HA_URL:-http://localhost:8123}
+      - PUBLIC_HA_TOKEN=${PUBLIC_HA_TOKEN}
