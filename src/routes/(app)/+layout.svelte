@@ -8,7 +8,7 @@
   style:background-image="url({background})"
   class="relative h-screen w-full bg-cover bg-center bg-no-repeat"
 >
-  <!-- Dark overlay with warm tint -->
+  <!-- Dark overlay -->
   <div class="absolute inset-0 bg-linear-to-b from-black/40 via-black/25 to-black/50"></div>
   <!-- Noise texture -->
   <div class="noise-overlay absolute inset-0"></div>
@@ -20,7 +20,7 @@
     </main>
     <div class="flex flex-col gap-3 px-12 pb-6">
       <div class="px-2">
-        <span class="font-mono text-xs text-white/10">{__BUILD_VERSION__}</span>
+        <span class="font-mono text-xs text-white/20">{__BUILD_VERSION__}</span>
       </div>
     </div>
   </div>

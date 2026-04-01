@@ -17,9 +17,11 @@
   export interface ForecastDay {
     day: string;
     icon: typeof Icon;
+    animation: string;
     high: number;
     low: number;
     description: string;
+    bgOpacity: number;
   }
   let { showForecast = false }: { showForecast?: boolean } = $props();
 
@@ -69,12 +71,17 @@
         .toLocaleDateString('de-DE', { weekday: 'short' })
         .toUpperCase()
         .replace('.', '');
+      const isSunny = d.condition === 'sunny' || d.condition === 'clear-night';
+      const high = Math.round(d.temperature as number);
+      const bgOpacity = parseFloat((0.05 + Math.max(0, Math.min(35, high)) / 35 * 0.18).toFixed(3));
       return {
         day,
         icon: condition.icon,
-        high: Math.round(d.temperature as number),
+        animation: isSunny ? 'animate-spin-slow' : 'animate-icon-bob',
+        high,
         low: Math.round(d.templow as number),
-        description: condition.label
+        description: condition.label,
+        bgOpacity
       };
     });
   });
@@ -124,12 +131,15 @@
           {@const ForecastIcon = data.icon}
           <div
             class="forecast-card animate-fade-up flex w-36 flex-col items-center justify-center gap-4 rounded-xl p-5"
-            style="animation-delay: {100 + i * 60}ms"
+            style="animation-delay: {100 + i * 60}ms; background: oklch(0.82 0.035 50 / {data.bgOpacity});"
           >
             <div class="text-sm font-medium tracking-[0.18em] text-white/80 uppercase">
               {data.day}
             </div>
-            <div class="text-white/75">
+            <div
+              class="{data.animation} text-white/75"
+              style="animation-delay: {i * 400}ms"
+            >
               <ForecastIcon size={40} strokeWidth={0.85} />
             </div>
             <div class="flex flex-col items-center gap-2 text-center">

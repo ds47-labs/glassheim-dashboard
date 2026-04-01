@@ -3,9 +3,10 @@
     streamUrl: string;
     muted?: boolean;
     useIframe?: boolean;
+    onloaded?: () => void;
   }
 
-  let { streamUrl, muted = false, useIframe = false }: Props = $props();
+  let { streamUrl, muted = false, useIframe = false, onloaded }: Props = $props();
 </script>
 
 {#if useIframe}
@@ -18,6 +19,7 @@
     allow="autoplay"
     sandbox="allow-same-origin allow-scripts allow-presentation"
     loading="eager"
+    onload={onloaded}
   ></iframe>
 {:else}
   <!-- Video mode: Native MP4 streaming -->

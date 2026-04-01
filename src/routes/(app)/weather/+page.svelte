@@ -67,9 +67,24 @@
   let pressure = $derived(ha.getNumericState('sensor.gw2000a_absolute_pressure') ?? '--');
   let windSpeed = $derived(ha.getNumericState('sensor.wind_speed_10min_avg') ?? '--');
   let windGust = $derived(ha.getNumericState('sensor.gw2000a_wind_gust') ?? '--');
+  let windAmplitude = $derived.by(() => {
+    const spd = parseFloat(windSpeed);
+    if (isNaN(spd)) return 1;
+    if (spd >= 50) return 2.5;
+    if (spd >= 30) return 1.8;
+    if (spd >= 15) return 1.2;
+    if (spd >= 5) return 0.7;
+    return 0.3;
+  });
   let windDeg = $derived.by(() => {
     const deg = parseFloat(ha.getState('sensor.gw2000a_wind_direction_10m_avg') ?? '');
     return isNaN(deg) ? null : deg;
+  });
+
+  let windDirText = $derived.by(() => {
+    if (windDeg === null) return '--';
+    const dirs = ['N', 'NO', 'O', 'SO', 'S', 'SW', 'W', 'NW'];
+    return dirs[Math.round(windDeg / 45) % 8];
   });
 
   let uv = $derived(parseFloat(ha.getNumericState('sensor.gw2000a_uv_index', 0) ?? '0'));
@@ -79,6 +94,16 @@
   );
   let sunrise = $derived(fmtTime(sunAttrs?.next_rising));
   let sunset = $derived(fmtTime(sunAttrs?.next_setting));
+  let dayLength = $derived.by(() => {
+    const rising = sunAttrs?.next_rising;
+    const setting = sunAttrs?.next_setting;
+    if (!rising || !setting) return '--';
+    const diff = new Date(setting).getTime() - new Date(rising).getTime();
+    const ms = diff < 0 ? 24 * 3_600_000 + diff : diff;
+    const h = Math.floor(ms / 3_600_000);
+    const m = Math.floor((ms % 3_600_000) / 60_000);
+    return `${h}h ${m}m`;
+  });
 
   const pollenSensors: { sensor: string; name: string }[] = [
     { sensor: 'sensor.polleninformation_hamavil_alder', name: 'Erle' },
@@ -107,35 +132,58 @@
       .sort((a, b) => b.level - a.level)
   );
 
-  let pollenActive = $derived(pollen.length);
-  let pollenTopName = $derived(pollen[0]?.name ?? '');
-  let pollenHeroUnit = $derived.by(() => {
-    if (pollenActive === 0) return 'Allergene';
-    if (pollenActive === 1) return pollenTopName;
-    return `aktiv · ${pollenTopName}`;
+  let now = $derived.by(() => {
+    const haDate = ha.getState('sensor.date');
+    const haTime = ha.getState('sensor.time');
+    return haDate && haTime ? new Date(`${haDate}T${haTime}`) : new Date();
   });
-  let pollenHeroLevel = $derived(pollen[0]?.level ?? 0);
-  let pollenLevelStyle = $derived(getPollenLevelStyle(pollenHeroLevel));
-  let pollenHeroAccentColor = $derived(`var(${pollenLevelStyle.accentVar})`);
-  let pollenHeroTextColor = $derived(pollenLevelStyle.textColor);
+
+  // Rain forecast from hourly OWM sensor
+  let rainForecast = $derived.by(() => {
+    const forecast = ha.getEntity('sensor.hourly_weather_data_openweathermap')?.attributes
+      ?.forecast_data as unknown[];
+    if (!Array.isArray(forecast)) return [];
+
+    return forecast
+      .map((item: unknown) => {
+        const f = item as Record<string, unknown>;
+        const prob = (f.precipitation_probability as number) ?? 0;
+        const level = prob <= 0 ? 0 : prob <= 25 ? 1 : prob <= 50 ? 2 : prob <= 75 ? 3 : 4;
+        return { time: f.datetime as string, level, value: prob / 100 };
+      })
+      .filter((item) => new Date(item.time) >= now)
+      .slice(0, 24);
+  });
 
   // Pollen forecast from HA (take next 24 hours)
   let pollenEntity = $derived(ha.getEntity('sensor.polleninformation_hamavil_allergy_risk_hourly'));
   let pollenForecast = $derived.by(() => {
-    const entity = pollenEntity;
-    const forecast = entity?.attributes?.forecast as unknown[];
+    const forecast = pollenEntity?.attributes?.forecast as unknown[];
     if (!Array.isArray(forecast)) return [];
 
-    // Take next 24 hours
-    return forecast.slice(0, 24).map((item: unknown) => {
-      const itemObj = item as Record<string, unknown>;
-      return {
-        hour: 0,
-        level: (itemObj.level as number) ?? 0,
-        time: itemObj.time as string
-      };
-    });
+    return forecast
+      .map((item: unknown) => {
+        const itemObj = item as Record<string, unknown>;
+        return {
+          hour: 0,
+          level: (itemObj.level as number) ?? 0,
+          time: itemObj.time as string
+        };
+      })
+      .filter((item) => new Date(item.time) >= now)
+      .slice(0, 24);
   });
+
+  const pollenLevelLabels = ['Keine', 'Niedrig', 'Mittel', 'Hoch', 'Sehr hoch'];
+
+  let pollenHourlyLevel = $derived(
+    (pollenEntity?.attributes?.level as number) ?? (pollenForecast[0]?.level ?? 0)
+  );
+  let pollenHourlyLevelStyle = $derived(getPollenLevelStyle(pollenHourlyLevel));
+  let pollenHeroAccentColor = $derived(`var(${pollenHourlyLevelStyle.accentVar})`);
+  let pollenHeroTextColor = $derived(pollenHourlyLevelStyle.textColor);
+
+
 </script>
 
 <WeatherCard showForecast />
@@ -146,12 +194,20 @@
       icon={Droplets}
       title="Niederschlag"
       accentColor="var(--accent-rain)"
-      hero={`${actualRainRate}`}
-      heroUnit={isRaining === 'on' ? 'mm' : 'Keiner'}
+      hero={isRaining === 'on' ? `${actualRainRate}` : '--'}
+      heroUnit={isRaining === 'on' ? 'mm/h' : 'Kein Regen'}
       stats={[
         { label: 'Tagesmenge', value: `${dailyRainRate} mm` },
         { label: 'Luftfeuchtigkeit', value: `${humidity} %` },
         { label: 'Taupunkt', value: `${dewPoint} °C` }
+      ]}
+      forecast={rainForecast}
+      forecastColors={[
+        'var(--forecast-rain-0)',
+        'var(--forecast-rain-1)',
+        'var(--forecast-rain-2)',
+        'var(--forecast-rain-3)',
+        'var(--forecast-rain-4)'
       ]}
     />
   </div>
@@ -165,8 +221,10 @@
       heroUnit="km/h"
       heroIcon={Navigation}
       heroIconRotation={windDeg !== null ? windDeg + 180 : undefined}
+      heroIconAmplitude={windAmplitude}
       stats={[
         { label: 'Böen', value: `${windGust} km/h` },
+        { label: 'Richtung', value: windDirText },
         { label: 'Luftdruck', value: `${pressure} hPa` }
       ]}
     />
@@ -184,7 +242,8 @@
       heroAccent={currentUvLevel?.color}
       stats={[
         { label: 'Sonnenaufgang', value: sunrise },
-        { label: 'Sonnenuntergang', value: sunset }
+        { label: 'Sonnenuntergang', value: sunset },
+        { label: 'Tageslänge', value: dayLength }
       ]}
     />
   </div>
@@ -194,8 +253,8 @@
       icon={Flower2}
       title="Pollenflug"
       accentColor={pollenHeroAccentColor}
-      hero={`${pollenActive}`}
-      heroUnit={pollenHeroUnit}
+      hero={`${pollenHourlyLevel}`}
+      heroUnit={pollenLevelLabels[Math.min(pollenHourlyLevel, 4)]}
       heroAccent={pollenHeroTextColor}
       stats={pollen.slice(0, 3).map((entry) => ({
         label: entry.name,

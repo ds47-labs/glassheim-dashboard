@@ -6,7 +6,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --font-size: clamp(0.625rem, min(1.15vw, 1.35svh), 1.5rem);
+  --font-size: clamp(0.75rem, min(1.15vw, 1.6svh), 1.5rem);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -67,12 +67,38 @@
   --accent-pollen-mid2: oklch(0.82 0.24 86 / 0.8);
   --accent-pollen-high: oklch(0.63 0.22 20 / 0.8);
 
-  /* Shadows */
-  --shadow-glass-sm: 0 0.25rem 1.25rem oklch(0 0 0 / 0.1), inset 0 0.0625rem 0.0625rem oklch(1 0 0 / 0.1);
-  --shadow-glass-md: 0 0.5rem 2rem oklch(0 0 0 / 0.12), inset 0 0.0625rem 0.0625rem oklch(1 0 0 / 0.12);
-  --shadow-glass-lg: 0 0.75rem 2.5rem oklch(0 0 0 / 0.15), inset 0 0.0625rem 0.0625rem oklch(1 0 0 / 0.14);
-  --shadow-dark-sm: 0 0 0 0.03125rem oklch(1 0 0 / 0.06) inset, 0 1.5rem 4rem oklch(0 0 0 / 0.4), 0 0.5rem 1.5rem oklch(0 0 0 / 0.3);
-  --shadow-dark-md: 0 0.25rem 1.25rem oklch(0 0 0 / 0.2), inset 0 0.0625rem 0.0625rem oklch(1 0 0 / 0.08);
+  /* Forecast bar colors — rain (sky palette) */
+  --forecast-rain-0: oklch(1 0 0 / 0.07);
+  --forecast-rain-1: oklch(0.79 0.14 215 / 0.40);
+  --forecast-rain-2: oklch(0.72 0.18 214 / 0.55);
+  --forecast-rain-3: oklch(0.65 0.21 214 / 0.70);
+  --forecast-rain-4: oklch(0.57 0.19 214 / 0.85);
+
+  /* Forecast bar colors — default / pollen (green → red) */
+  --forecast-default-0: oklch(1 0 0 / 0.07);
+  --forecast-default-1: oklch(0.79 0.21 148 / 0.50);
+  --forecast-default-2: oklch(0.87 0.20 95 / 0.62);
+  --forecast-default-3: oklch(0.75 0.18 55 / 0.72);
+  --forecast-default-4: oklch(0.68 0.20 25 / 0.82);
+
+  /* Glass warm tints — pulled from --accent-warm to unify header & content */
+  --glass-warm-bg-1: oklch(0.82 0.035 50 / 0.09);
+  --glass-warm-bg-2: oklch(0.82 0.035 50 / 0.13);
+  --glass-warm-border: oklch(0.82 0.055 50 / 0.16);
+  --glass-warm-border-elevated: oklch(0.82 0.055 50 / 0.21);
+
+  /* Shadows — top-edge highlight now warm-tinted */
+  --shadow-glass-sm:
+    0 0.25rem 1.25rem oklch(0 0 0 / 0.12), inset 0 0.0625rem 0.0625rem oklch(0.82 0.08 80 / 0.08);
+  --shadow-glass-md:
+    0 0.5rem 2rem oklch(0 0 0 / 0.15), inset 0 0.0625rem 0.0625rem oklch(0.82 0.08 80 / 0.1);
+  --shadow-glass-lg:
+    0 0.75rem 2.5rem oklch(0 0 0 / 0.18), inset 0 0.0625rem 0.0625rem oklch(0.82 0.08 80 / 0.12);
+  --shadow-dark-sm:
+    0 0 0 0.03125rem oklch(1 0 0 / 0.06) inset, 0 1.5rem 4rem oklch(0 0 0 / 0.4),
+    0 0.5rem 1.5rem oklch(0 0 0 / 0.3);
+  --shadow-dark-md:
+    0 0.25rem 1.25rem oklch(0 0 0 / 0.2), inset 0 0.0625rem 0.0625rem oklch(1 0 0 / 0.08);
 }
 
 .dark {
@@ -117,11 +143,17 @@
   --glass-opacity-3: oklch(1 0 0 / 0.18);
 
   /* Shadows */
-  --shadow-glass-sm: 0 0.25rem 1.25rem oklch(0 0 0 / 0.1), inset 0 0.0625rem 0.0625rem oklch(1 0 0 / 0.1);
-  --shadow-glass-md: 0 0.5rem 2rem oklch(0 0 0 / 0.12), inset 0 0.0625rem 0.0625rem oklch(1 0 0 / 0.12);
-  --shadow-glass-lg: 0 0.75rem 2.5rem oklch(0 0 0 / 0.15), inset 0 0.0625rem 0.0625rem oklch(1 0 0 / 0.14);
-  --shadow-dark-sm: 0 0 0 0.03125rem oklch(1 0 0 / 0.06) inset, 0 1.5rem 4rem oklch(0 0 0 / 0.4), 0 0.5rem 1.5rem oklch(0 0 0 / 0.3);
-  --shadow-dark-md: 0 0.25rem 1.25rem oklch(0 0 0 / 0.2), inset 0 0.0625rem 0.0625rem oklch(1 0 0 / 0.08);
+  --shadow-glass-sm:
+    0 0.25rem 1.25rem oklch(0 0 0 / 0.1), inset 0 0.0625rem 0.0625rem oklch(1 0 0 / 0.1);
+  --shadow-glass-md:
+    0 0.5rem 2rem oklch(0 0 0 / 0.12), inset 0 0.0625rem 0.0625rem oklch(1 0 0 / 0.12);
+  --shadow-glass-lg:
+    0 0.75rem 2.5rem oklch(0 0 0 / 0.15), inset 0 0.0625rem 0.0625rem oklch(1 0 0 / 0.14);
+  --shadow-dark-sm:
+    0 0 0 0.03125rem oklch(1 0 0 / 0.06) inset, 0 1.5rem 4rem oklch(0 0 0 / 0.4),
+    0 0.5rem 1.5rem oklch(0 0 0 / 0.3);
+  --shadow-dark-md:
+    0 0.25rem 1.25rem oklch(0 0 0 / 0.2), inset 0 0.0625rem 0.0625rem oklch(1 0 0 / 0.08);
 }
 
 @theme inline {
@@ -227,21 +259,25 @@
 /* Glass morphism */
 @layer components {
   .glass-panel {
-    @apply relative bg-white/8 border border-white/10 backdrop-blur-lg backdrop-saturate-150;
+    @apply relative backdrop-blur-lg backdrop-saturate-75;
+    background: var(--glass-warm-bg-1);
+    border: 1px solid var(--glass-warm-border);
     box-shadow: var(--shadow-glass-sm);
   }
 
   .glass-panel-elevated {
-    @apply relative bg-white/10 border border-white/10 backdrop-blur-xl backdrop-saturate-150;
+    @apply relative backdrop-blur-xl backdrop-saturate-75;
+    background: var(--glass-warm-bg-2);
+    border: 1px solid var(--glass-warm-border-elevated);
     box-shadow: var(--shadow-glass-md);
   }
 
   .glass-panel-subtle {
-    @apply relative bg-black/20 border border-white/5 backdrop-blur-lg backdrop-saturate-100;
+    @apply relative border border-white/5 bg-black/20 backdrop-blur-lg backdrop-saturate-100;
   }
 
   .glass-dropdown {
-    @apply absolute bg-black/85 border border-white/10 backdrop-blur-2xl backdrop-saturate-150 z-50;
+    @apply absolute z-50 border border-white/10 bg-black/85 backdrop-blur-2xl backdrop-saturate-150;
     box-shadow: var(--shadow-dark-sm);
   }
 }
@@ -273,7 +309,8 @@
 
 /* Weather icon animations */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -291,7 +328,8 @@
 }
 
 @keyframes sway {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-2deg);
   }
   50% {
@@ -313,6 +351,91 @@
 
 .animate-sway {
   animation: sway 2.5s ease-in-out infinite;
+}
+
+@keyframes wind-wobble {
+  0% {
+    transform: rotate(calc(var(--wind-amp, 1) * 0deg));
+  }
+  7% {
+    transform: rotate(calc(var(--wind-amp, 1) * 11deg));
+  }
+  13% {
+    transform: rotate(calc(var(--wind-amp, 1) * 4deg));
+  }
+  21% {
+    transform: rotate(calc(var(--wind-amp, 1) * -8deg));
+  }
+  27% {
+    transform: rotate(calc(var(--wind-amp, 1) * -2deg));
+  }
+  36% {
+    transform: rotate(calc(var(--wind-amp, 1) * 13deg));
+  }
+  41% {
+    transform: rotate(calc(var(--wind-amp, 1) * 6deg));
+  }
+  53% {
+    transform: rotate(calc(var(--wind-amp, 1) * -10deg));
+  }
+  58% {
+    transform: rotate(calc(var(--wind-amp, 1) * -1deg));
+  }
+  67% {
+    transform: rotate(calc(var(--wind-amp, 1) * 8deg));
+  }
+  74% {
+    transform: rotate(calc(var(--wind-amp, 1) * 3deg));
+  }
+  82% {
+    transform: rotate(calc(var(--wind-amp, 1) * -7deg));
+  }
+  89% {
+    transform: rotate(calc(var(--wind-amp, 1) * 5deg));
+  }
+  95% {
+    transform: rotate(calc(var(--wind-amp, 1) * -3deg));
+  }
+  100% {
+    transform: rotate(calc(var(--wind-amp, 1) * 0deg));
+  }
+}
+
+@keyframes icon-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0.9;
+  }
+}
+
+@keyframes icon-bob {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  40% {
+    transform: translateY(-4px) scale(1.08);
+  }
+  65% {
+    transform: translateY(-2px) scale(1.03);
+  }
+}
+
+.animate-wind-wobble {
+  animation: wind-wobble 3.8s ease-in-out infinite;
+}
+
+.animate-icon-breathe {
+  animation: icon-breathe 3s ease-in-out infinite;
+}
+
+.animate-icon-bob {
+  animation: icon-bob 2.8s ease-in-out infinite;
 }
 
 /* Touch-friendly tap targets */
@@ -352,23 +475,19 @@
 
 /* Status bar — dark glassmorphism */
 .status-dark-bar {
-  @apply relative flex items-center gap-4 px-6 py-3.5 mx-auto max-w-fit
-         bg-black/65 border border-white/8 backdrop-blur-lg rounded-lg;
+  @apply relative mx-auto flex max-w-fit items-center gap-4 rounded-lg border border-white/8 bg-black/65 px-6 py-3.5 backdrop-blur-lg;
   box-shadow: var(--shadow-dark-md);
 }
 
 .status-item {
-  @apply flex items-center gap-3 transition-opacity duration-200 ease-out hover:opacity-90;
+  @apply flex items-center gap-3;
 }
 
 /* Forecast card — refined glassmorphism */
 .forecast-card {
-  @apply relative bg-white/10 border border-white/15 backdrop-blur-xl
-         transition-all duration-300 ease-out;
+  @apply relative backdrop-blur-xl backdrop-saturate-50 transition-all duration-300 ease-out;
+  background: var(--glass-warm-bg-2);
+  border: 1px solid var(--glass-warm-border-elevated);
   box-shadow: var(--shadow-glass-lg);
 }
 
-.forecast-card:hover {
-  @apply bg-white/20 border-white/20 -translate-y-0.5;
-  box-shadow: var(--shadow-glass-lg);
-}

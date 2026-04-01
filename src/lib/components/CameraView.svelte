@@ -1,14 +1,21 @@
 <script lang="ts">
-  import { Volume2, Mic, Settings } from 'lucide-svelte';
   import WebRTCPlayer from './WebRTCPlayer.svelte';
 
   interface Props {
     streamUrl: string;
     iframeUrl?: string;
-    isLoading?: boolean;
   }
 
-  let { streamUrl, iframeUrl, isLoading = false }: Props = $props();
+  let { streamUrl, iframeUrl }: Props = $props();
+
+  let isLoading = $state(true);
+
+  $effect(() => {
+    // Reset loading whenever the stream changes
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    iframeUrl || streamUrl;
+    isLoading = true;
+  });
 </script>
 
 <div class="group relative h-full overflow-hidden rounded-2xl">
@@ -36,7 +43,7 @@
     {/if}
 
     <!-- Video stream -->
-    <WebRTCPlayer streamUrl={iframeUrl || streamUrl} useIframe={true} />
+    <WebRTCPlayer streamUrl={iframeUrl || streamUrl} useIframe={true} onloaded={() => (isLoading = false)} />
 
     <!-- FOCUS indicator -->
     <div class="pointer-events-none absolute top-6 left-6 z-30">

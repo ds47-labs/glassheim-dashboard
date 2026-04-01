@@ -15,7 +15,7 @@
 
 <button
   {onclick}
-  class={`group relative overflow-hidden rounded-xl transition-all duration-300 focus:outline-none ${
+  class={`group relative cursor-pointer overflow-hidden rounded-xl transition-all duration-300 focus:outline-none ${
     isFocused ? 'ring-2 ring-white/40' : ''
   }`}
 >
@@ -29,7 +29,7 @@
   ></div>
 
   <div
-    class="glass-panel animate-fade-up relative aspect-square overflow-hidden rounded-lg flex"
+    class="glass-panel animate-fade-up relative aspect-video overflow-hidden rounded-lg flex"
     style="animation-delay: {50 + index * 30}ms"
   >
     <!-- Thumbnail video -->

@@ -84,37 +84,28 @@
   ];
 
   let focusedCamera = $state(cameras[0]);
-  let isLoading = $state(false);
 
   function handleCameraClick(camera: Camera) {
     if (focusedCamera.id === camera.id) return;
-    isLoading = true;
     focusedCamera = camera;
-    setTimeout(() => {
-      isLoading = false;
-    }, 300);
   }
 </script>
 
-<div class="flex h-full flex-col gap-6">
-  <!-- Top: Large Focus Camera -->
-  <div class="h-180 overflow-hidden rounded-2xl">
+<div class="flex h-full flex-col gap-4">
+  <!-- Top: Large Focus Camera — fills all space above the thumbnail strip -->
+  <div class="min-h-0 flex-1 overflow-hidden rounded-2xl">
     <CameraView
-      name={focusedCamera.name}
-      location={focusedCamera.location}
       streamUrl={focusedCamera.streamUrl}
       iframeUrl={focusedCamera.iframeUrl}
-      {isLoading}
-      showControls={false}
     />
   </div>
 
-  <!-- Bottom: Full Width Camera Grid (2 rows) -->
-  <div class="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
+  <!-- Bottom: Thumbnail strip — natural height from aspect-video cells -->
+  <div class="flex shrink-0 flex-col gap-3">
     <div class="text-xs font-medium tracking-wider text-white/50 uppercase">
       {cameras.length} Kameras
     </div>
-    <div class="grid grid-cols-10 gap-3 overflow-y-auto pr-2">
+    <div class="grid grid-cols-5 gap-3">
       {#each cameras as camera, i (camera.id)}
         <CameraThumbnail
           name={camera.name}
