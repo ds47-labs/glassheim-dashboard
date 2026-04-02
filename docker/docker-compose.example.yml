@@ -3,8 +3,8 @@ version: '3.8'
 services:
   dashboard:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: docker/Dockerfile
       args:
         PUBLIC_HA_URL: ${PUBLIC_HA_URL:-http://localhost:8123}
         PUBLIC_HA_TOKEN: ${PUBLIC_HA_TOKEN}
