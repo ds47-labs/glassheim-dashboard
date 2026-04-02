@@ -40,7 +40,7 @@ else
 endif
 
 build:
-	docker build -f docker/Dockerfile --build-arg BUILD_VERSION=$(VERSION) -t $(IMAGE):$(VERSION) -t $(IMAGE):latest .
+	docker build --build-arg BUILD_VERSION=$(VERSION) -t $(IMAGE):$(VERSION) -t $(IMAGE):latest .
 
 push: build
 	docker push $(IMAGE):$(VERSION)
@@ -50,7 +50,7 @@ run:
 	docker run --rm -p 80:80 $(IMAGE):latest
 
 dev-build:
-	docker build -f docker/Dockerfile.dev -t glasheim-dashboard:dev .
+	docker build -f Dockerfile.dev -t glasheim-dashboard:dev .
 
 dev: dev-build
 	docker run --rm -it \
