@@ -21,6 +21,9 @@ Thumbs.db
 !.env.example
 !.env.test
 
+# Runtime config (contains credentials)
+static/config.js
+
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*

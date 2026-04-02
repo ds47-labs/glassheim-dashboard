@@ -1,5 +1,3 @@
-import { PUBLIC_HA_URL, PUBLIC_HA_TOKEN } from '$env/static/public';
-
 export interface HaState {
   entity_id: string;
   state: string;
@@ -30,14 +28,8 @@ class HaClient {
   private haToken: string;
 
   constructor() {
-    // Get config from window.__config__ (runtime), fall back to PUBLIC_ env vars (build-time)
-    if (typeof window !== 'undefined' && window.__config__) {
-      this.haUrl = window.__config__.PUBLIC_HA_URL || PUBLIC_HA_URL;
-      this.haToken = window.__config__.PUBLIC_HA_TOKEN || PUBLIC_HA_TOKEN;
-    } else {
-      this.haUrl = PUBLIC_HA_URL;
-      this.haToken = PUBLIC_HA_TOKEN;
-    }
+    this.haUrl = (typeof window !== 'undefined' ? window.__config__?.PUBLIC_HA_URL : undefined) ?? '';
+    this.haToken = (typeof window !== 'undefined' ? window.__config__?.PUBLIC_HA_TOKEN : undefined) ?? '';
   }
 
   connect() {
