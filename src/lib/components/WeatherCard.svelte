@@ -2,7 +2,6 @@
   import { ha } from '$lib/ha/client.svelte';
   import {
     Sun,
-    Moon,
     CloudSun,
     Cloud,
     CloudRain,
@@ -27,7 +26,7 @@
 
   const haConditionMap: Record<string, { icon: typeof Icon; label: string }> = {
     sunny: { icon: Sun, label: 'Sonnig' },
-    'clear-night': { icon: Moon, label: 'Klar' },
+    'clear-night': { icon: Sun, label: 'Klar' },
     partlycloudy: { icon: CloudSun, label: 'Bewölkt' },
     cloudy: { icon: Cloud, label: 'Überwiegend bewölkt' },
     rainy: { icon: CloudRain, label: 'Regnerisch' },
