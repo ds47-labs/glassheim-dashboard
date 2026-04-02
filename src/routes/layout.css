@@ -259,25 +259,25 @@
 /* Glass morphism */
 @layer components {
   .glass-panel {
-    @apply relative backdrop-blur-lg backdrop-saturate-75;
+    @apply relative backdrop-blur-md backdrop-saturate-75;
     background: var(--glass-warm-bg-1);
     border: 1px solid var(--glass-warm-border);
     box-shadow: var(--shadow-glass-sm);
   }
 
   .glass-panel-elevated {
-    @apply relative backdrop-blur-xl backdrop-saturate-75;
+    @apply relative backdrop-blur-lg backdrop-saturate-75;
     background: var(--glass-warm-bg-2);
     border: 1px solid var(--glass-warm-border-elevated);
     box-shadow: var(--shadow-glass-md);
   }
 
   .glass-panel-subtle {
-    @apply relative border border-white/5 bg-black/20 backdrop-blur-lg backdrop-saturate-100;
+    @apply relative border border-white/5 bg-black/20 backdrop-blur-md backdrop-saturate-100;
   }
 
   .glass-dropdown {
-    @apply absolute z-50 border border-white/10 bg-black/85 backdrop-blur-2xl backdrop-saturate-150;
+    @apply absolute z-50 border border-white/10 bg-black/85 backdrop-blur-xl backdrop-saturate-150;
     box-shadow: var(--shadow-dark-sm);
   }
 }
@@ -485,7 +485,7 @@
 
 /* Forecast card — refined glassmorphism */
 .forecast-card {
-  @apply relative backdrop-blur-xl backdrop-saturate-50 transition-all duration-300 ease-out;
+  @apply relative backdrop-blur-lg backdrop-saturate-50 transition-all duration-300 ease-out;
   background: var(--glass-warm-bg-2);
   border: 1px solid var(--glass-warm-border-elevated);
   box-shadow: var(--shadow-glass-lg);

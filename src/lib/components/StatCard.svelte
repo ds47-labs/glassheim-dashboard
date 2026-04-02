@@ -61,7 +61,7 @@
 
   <div class="flex h-full flex-col p-7 pl-8">
     <div class="mb-6 flex items-center gap-2.5">
-      <div class="animate-icon-breathe text-white/60">
+      <div class="text-white/60">
         {#if IconComponent}
           <IconComponent size={18} strokeWidth={1.2} />
         {/if}
@@ -103,9 +103,9 @@
           {/each}
         </div>
         <div class="flex justify-between">
-          <span class="text-xs text-white/30 tabular-nums">{new Date(forecast[0].time).getHours().toString().padStart(2, '0')}:00</span>
-          <span class="text-xs text-white/30 tabular-nums">{new Date(forecast[Math.floor((forecast.length - 1) / 2)].time).getHours().toString().padStart(2, '0')}:00</span>
-          <span class="text-xs text-white/30 tabular-nums">{new Date(forecast[forecast.length - 1].time).getHours().toString().padStart(2, '0')}:00</span>
+          <span class="text-xs text-white/45 tabular-nums">{new Date(forecast[0].time).getHours().toString().padStart(2, '0')}:00</span>
+          <span class="text-xs text-white/45 tabular-nums">{new Date(forecast[Math.floor((forecast.length - 1) / 2)].time).getHours().toString().padStart(2, '0')}:00</span>
+          <span class="text-xs text-white/45 tabular-nums">{new Date(forecast[forecast.length - 1].time).getHours().toString().padStart(2, '0')}:00</span>
         </div>
       </div>
     {/if}

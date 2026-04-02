@@ -18,10 +18,5 @@
     <main class="flex min-h-0 flex-1 flex-col justify-center gap-4 px-12 pt-5 pb-4">
       {@render children()}
     </main>
-    <div class="flex flex-col gap-3 px-12 pb-6">
-      <div class="px-2">
-        <span class="font-mono text-xs text-white/20">{__BUILD_VERSION__}</span>
-      </div>
-    </div>
   </div>
 </div>

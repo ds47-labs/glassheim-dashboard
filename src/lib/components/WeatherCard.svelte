@@ -50,13 +50,7 @@
     return haConditionMap[state ?? ''] ?? { icon: CloudSun, label: state ?? '--' };
   });
 
-  let weatherAnimation = $derived.by(() => {
-    const state = ha.getState('sensor.openweathermap_condition');
-    if (state === 'sunny' || state === 'clear-night') return 'animate-spin-slow';
-    if (state?.includes('wind')) return 'animate-sway';
-    return 'animate-float';
-  });
-  let todayHigh = $derived(ha.getState('sensor.weather_temperature_max') ?? '--');
+let todayHigh = $derived(ha.getState('sensor.weather_temperature_max') ?? '--');
   let todayLow = $derived(ha.getState('sensor.weather_temperature_min') ?? '--');
 
   let forecast = $derived.by<ForecastDay[]>(() => {
@@ -77,7 +71,7 @@
       return {
         day,
         icon: condition.icon,
-        animation: isSunny ? 'animate-spin-slow' : 'animate-icon-bob',
+        animation: isSunny ? 'animate-spin-slow' : '',
         high,
         low: Math.round(d.templow as number),
         description: condition.label,
@@ -93,7 +87,7 @@
       <div class="mb-8 flex items-end gap-6">
         {#if weatherCondition.icon}
           {@const ConditionIcon = weatherCondition.icon}
-          <div class="-mb-4 text-white/60 {weatherAnimation}">
+          <div class="-mb-4 text-white/60">
             <ConditionIcon strokeWidth={0.6} class="h-64 w-64" />
           </div>
         {/if}
@@ -130,8 +124,8 @@
         {#each forecast as data, i (data.day)}
           {@const ForecastIcon = data.icon}
           <div
-            class="forecast-card animate-fade-up flex w-36 flex-col items-center justify-center gap-4 rounded-xl p-5"
-            style="animation-delay: {100 + i * 60}ms; background: oklch(0.82 0.035 50 / {data.bgOpacity});"
+            class="forecast-card flex w-36 flex-col items-center justify-center gap-4 rounded-xl p-5"
+            style="background: oklch(0.82 0.035 50 / {data.bgOpacity});"
           >
             <div class="text-sm font-medium tracking-[0.18em] text-white/80 uppercase">
               {data.day}

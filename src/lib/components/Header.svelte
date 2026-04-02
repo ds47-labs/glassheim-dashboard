@@ -5,14 +5,11 @@
     LayoutDashboard,
     Camera,
     CloudSun,
-    ChefHat,
-    UtensilsCrossed,
-    Sofa,
-    Moon,
-    User,
-    Monitor,
-    Zap,
-    TrendingUp
+    LayoutGrid,
+    Sun,
+    Plug,
+    Gauge,
+    Thermometer
   } from 'lucide-svelte';
   import type { Icon } from 'lucide-svelte';
 
@@ -20,12 +17,7 @@
     { label: 'Übersicht', href: '/overview', icon: LayoutDashboard },
     { label: 'Kameras', href: '/security', icon: Camera },
     { label: 'Wetter', href: '/weather', icon: CloudSun },
-    { label: 'Küche', href: '/kitchen', icon: ChefHat },
-    { label: 'Esszimmer', href: '/dining', icon: UtensilsCrossed },
-    { label: 'Wohnzimmer', href: '/living', icon: Sofa },
-    { label: 'Schlafzimmer', href: '/bedroom', icon: Moon },
-    { label: 'Nils', href: '/nils', icon: User },
-    { label: 'Büro', href: '/office', icon: Monitor }
+    { label: 'Räume', href: '/rooms', icon: LayoutGrid }
   ];
 
   let currentPath = $derived(page.url.pathname);
@@ -36,6 +28,25 @@
     const v = ha.getNumericState('sensor.solaredge_produced_energy', 0);
     return v !== null ? (parseFloat(v) / 1000).toFixed(2) : '--';
   });
+
+  // Grid: positiv = Bezug vom Netz, negativ = Einspeisung
+  let gridPower = $derived(ha.getNumericState('sensor.solaredge_grid_power', 2) ?? '--');
+  let gridImporting = $derived(
+    parseFloat(ha.getEntity('sensor.solaredge_grid_power')?.state ?? '1') > 0.05
+  );
+  let gridToday = $derived.by(() => {
+    const v = ha.getNumericState('sensor.solaredge_imported_energy', 0);
+    return v !== null ? (parseFloat(v) / 1000).toFixed(2) : '--';
+  });
+
+  let autarkie = $derived(
+    parseFloat(ha.getNumericState('sensor.ground_garage_power_self_sufficiency', 0) ?? '0')
+  );
+
+  // Warmwasser
+  let warmwasser = $derived(
+    ha.getNumericState('sensor.bridge0_dhw_temperature_r5t_dhw_tank', 1) ?? '--'
+  );
 
   let date = $derived.by(() => {
     const dateStr = ha.getState('sensor.date');
@@ -50,7 +61,7 @@
   });
 </script>
 
-<header class="flex flex-col bg-black/20 px-12 backdrop-blur-md">
+<header class="flex flex-col bg-black/20 px-12 backdrop-blur-sm">
   <!-- Top row: Logo | PV | Date + Time -->
   <div class="grid grid-cols-3 items-center py-3.5">
     <div
@@ -59,29 +70,108 @@
       Hamavil
     </div>
 
-    <!-- PV Widget -->
-    <div class="flex items-center justify-center gap-5">
+    <!-- Energy Widget -->
+    <div class="flex items-center justify-center gap-4">
+      <!-- PV -->
       <div class="flex items-center gap-2.5">
-        <Zap size={14} strokeWidth={1.5} class="text-yellow-400/70" />
-        <div class="flex items-baseline gap-1.5">
-          <span class="text-xl font-extralight text-white/85 tabular-nums">{pvPower}</span>
-          <span class="text-xs font-light text-white/40">kW</span>
+        <Sun
+          size={16}
+          strokeWidth={1.3}
+          class="shrink-0 {!gridImporting ? 'text-yellow-400/90' : 'text-yellow-400/75'}"
+        />
+        <div class="flex flex-col gap-0.5">
+          <div class="flex items-baseline gap-1">
+            <span
+              class="text-xl font-extralight tabular-nums {!gridImporting
+                ? 'text-yellow-300/90'
+                : 'text-white/90'}">{pvToday}</span
+            >
+            <span class="text-[10px] text-white/40">kWh</span>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <span class="text-xs font-light text-white/45 tabular-nums">{pvPower}</span>
+            <span class="text-[10px] text-white/25">kW</span>
+          </div>
         </div>
       </div>
-      <div class="h-3 w-px bg-white/15"></div>
+
+      <div class="h-5 w-px bg-white/12"></div>
+
+      <!-- Netz -->
       <div class="flex items-center gap-2.5">
-        <TrendingUp size={14} strokeWidth={1.5} class="text-white/35" />
-        <div class="flex items-baseline gap-1.5">
-          <span class="text-xl font-extralight text-white/65 tabular-nums">{pvToday}</span>
-          <span class="text-xs font-light text-white/35">kWh heute</span>
+        <Plug
+          size={16}
+          strokeWidth={1.3}
+          class="shrink-0 {gridImporting ? 'text-blue-400/70' : 'text-white/25'}"
+        />
+        <div class="flex flex-col gap-0.5">
+          <div class="flex items-baseline gap-1">
+            <span
+              class="text-xl font-extralight tabular-nums {gridImporting
+                ? 'text-blue-300/90'
+                : 'text-white/90'}">{gridToday}</span
+            >
+            <span class="text-[10px] text-white/40">kWh</span>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <span class="text-xs font-light text-white/45 tabular-nums">{gridPower}</span>
+            <span class="text-[10px] text-white/25">kW</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="h-5 w-px bg-white/12"></div>
+
+      <!-- Autarkie -->
+      <div class="flex items-center gap-2.5">
+        <Gauge
+          size={16}
+          strokeWidth={1.3}
+          class="shrink-0 {autarkie >= 80
+            ? 'text-green-400/75'
+            : autarkie >= 50
+              ? 'text-yellow-400/75'
+              : 'text-orange-400/75'}"
+        />
+        <div class="flex flex-col gap-0.5">
+          <div class="flex items-baseline gap-0.5">
+            <span
+              class="text-xl font-extralight tabular-nums {autarkie >= 80
+                ? 'text-green-300/90'
+                : autarkie >= 50
+                  ? 'text-yellow-300/90'
+                  : 'text-orange-300/90'}">{autarkie}</span
+            >
+            <span class="text-[10px] text-white/40">%</span>
+          </div>
+          <span class="text-[10px] tracking-wide text-white/30">Autarkie</span>
+        </div>
+      </div>
+
+      <div class="h-5 w-px bg-white/12"></div>
+
+      <!-- Warmwasser -->
+      <div class="flex items-center gap-2.5">
+        <Thermometer size={16} strokeWidth={1.3} class="shrink-0 text-orange-300/65" />
+        <div class="flex flex-col gap-0.5">
+          <div class="flex items-baseline gap-1">
+            <span class="text-xl font-extralight text-white/90 tabular-nums">{warmwasser}</span>
+            <span class="text-[10px] text-white/40">°C</span>
+          </div>
+          <span class="text-[10px] tracking-wide text-white/30">Warmwasser</span>
         </div>
       </div>
     </div>
 
     <div class="flex items-baseline justify-end gap-5">
       <div class="text-sm font-light tracking-wide text-white/45 capitalize">{date}</div>
-      <div class="text-3xl leading-none font-extralight tracking-wider text-white/85 tabular-nums">
-        {time}
+      <div class="flex flex-col items-end gap-1">
+        <div
+          class="text-3xl leading-none font-extralight tracking-wider text-(--accent-warm) tabular-nums"
+        >
+          {time}
+        </div>
+        <span class="font-mono text-[10px] leading-none text-white/15">{__BUILD_VERSION__}</span>
       </div>
     </div>
   </div>
@@ -90,22 +180,19 @@
   <div class="h-px bg-linear-to-r from-transparent via-white/8 to-transparent"></div>
 
   <!-- Bottom row: Navigation -->
-  <nav class="flex items-stretch gap-0.5 py-2">
-    {#each navItems as item, i (item.label)}
-      {#if i === 3}
-        <div class="mx-2 h-4 w-px self-center bg-white/12"></div>
-      {/if}
+  <nav class="mx-auto inline-grid grid-cols-4 gap-1 py-2">
+    {#each navItems as item (item.label)}
       {@const NavIcon = item.icon}
+      {@const isActive = currentPath.startsWith(item.href)}
       <a
         href={item.href}
-        class="flex flex-1 items-center justify-center gap-2 rounded-xl border-b-2 px-2
-               py-2.5 transition-colors duration-200
-               {currentPath === item.href
+        class="flex items-center gap-2.5 rounded-xl border-b-2 px-7 py-3 transition-colors duration-200
+               {isActive
           ? 'border-(--accent-warm)/55 bg-(--accent-warm)/10 text-white'
-          : 'border-transparent text-white/55'}"
+          : 'border-transparent text-white/50 hover:bg-white/5 hover:text-white/75'}"
       >
-        <NavIcon size={15} strokeWidth={currentPath === item.href ? 1.8 : 1.4} />
-        <span class="text-sm font-medium tracking-wide">{item.label}</span>
+        <NavIcon size={16} strokeWidth={isActive ? 1.8 : 1.4} />
+        <span class="text-sm font-medium tracking-[0.12em]">{item.label}</span>
       </a>
     {/each}
   </nav>
