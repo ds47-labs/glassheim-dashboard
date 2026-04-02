@@ -186,10 +186,12 @@
       {@const isActive = currentPath.startsWith(item.href)}
       <a
         href={item.href}
-        class="flex items-center gap-2.5 rounded-xl border-b-2 px-7 py-3 transition-colors duration-200
+        style="touch-action: manipulation;"
+        onclick={() => navigator.vibrate?.(30)}
+        class="flex items-center gap-2.5 rounded-xl border-b-2 px-7 py-3 transition-colors duration-150
                {isActive
           ? 'border-(--accent-warm)/55 bg-(--accent-warm)/10 text-white'
-          : 'border-transparent text-white/50 hover:bg-white/5 hover:text-white/75'}"
+          : 'border-transparent text-white/50 active:bg-white/8 active:text-white/75'}"
       >
         <NavIcon size={16} strokeWidth={isActive ? 1.8 : 1.4} />
         <span class="text-sm font-medium tracking-[0.12em]">{item.label}</span>

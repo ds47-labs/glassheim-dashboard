@@ -12,16 +12,20 @@
     ArrowDown
   } from 'lucide-svelte';
   import type { Icon } from 'lucide-svelte';
+  import ForecastDialog from './ForecastDialog.svelte';
 
   export interface ForecastDay {
     day: string;
+    fullDate: string;
     icon: typeof Icon;
     animation: string;
     high: number;
     low: number;
     description: string;
     bgOpacity: number;
+    raw: Record<string, unknown>;
   }
+
   let { showForecast = false }: { showForecast?: boolean } = $props();
 
   const haConditionMap: Record<string, { icon: typeof Icon; label: string }> = {
@@ -49,7 +53,7 @@
     return haConditionMap[state ?? ''] ?? { icon: CloudSun, label: state ?? '--' };
   });
 
-let todayHigh = $derived(ha.getState('sensor.weather_temperature_max') ?? '--');
+  let todayHigh = $derived(ha.getState('sensor.weather_temperature_max') ?? '--');
   let todayLow = $derived(ha.getState('sensor.weather_temperature_min') ?? '--');
 
   let forecast = $derived.by<ForecastDay[]>(() => {
@@ -60,24 +64,26 @@ let todayHigh = $derived(ha.getState('sensor.weather_temperature_max') ?? '--');
     return raw.slice(1, 6).map((d) => {
       const condition = haConditionMap[d.condition as string] ?? haConditionMap['partlycloudy'];
       const date = new Date(d.datetime as string);
-      const day = date
-        .toLocaleDateString('de-DE', { weekday: 'short' })
-        .toUpperCase()
-        .replace('.', '');
+      const day = date.toLocaleDateString('de-DE', { weekday: 'short' }).toUpperCase().replace('.', '');
+      const fullDate = date.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
       const isSunny = d.condition === 'sunny' || d.condition === 'clear-night';
       const high = Math.round(d.temperature as number);
       const bgOpacity = parseFloat((0.05 + Math.max(0, Math.min(35, high)) / 35 * 0.18).toFixed(3));
       return {
         day,
+        fullDate,
         icon: condition.icon,
         animation: isSunny ? 'animate-spin-slow' : '',
         high,
         low: Math.round(d.templow as number),
         description: condition.label,
-        bgOpacity
+        bgOpacity,
+        raw: d
       };
     });
   });
+
+  let selectedDay = $state<ForecastDay | null>(null);
 </script>
 
 <div class="glass-panel-elevated rounded-2xl p-10">
@@ -122,17 +128,16 @@ let todayHigh = $derived(ha.getState('sensor.weather_temperature_max') ?? '--');
       <div class="flex shrink-0 items-stretch gap-3">
         {#each forecast as data, i (data.day)}
           {@const ForecastIcon = data.icon}
-          <div
-            class="forecast-card flex w-36 flex-col items-center justify-center gap-4 rounded-xl p-5"
-            style="background: oklch(0.82 0.035 50 / {data.bgOpacity});"
+          <button
+            onclick={() => { navigator.vibrate?.(30); selectedDay = data; }}
+            class="forecast-card flex w-36 flex-col items-center justify-center gap-4 rounded-xl p-5 transition-opacity duration-150 ease-out active:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/40"
+            style="background: oklch(0.82 0.035 50 / {data.bgOpacity}); touch-action: manipulation;"
+            aria-label="Details für {data.fullDate}"
           >
             <div class="text-sm font-medium tracking-[0.18em] text-white/80 uppercase">
               {data.day}
             </div>
-            <div
-              class="{data.animation} text-white/75"
-              style="animation-delay: {i * 400}ms"
-            >
+            <div class="{data.animation} text-white/75" style="animation-delay: {i * 400}ms">
               <ForecastIcon size={40} strokeWidth={0.85} />
             </div>
             <div class="flex flex-col items-center gap-2 text-center">
@@ -145,9 +150,11 @@ let todayHigh = $derived(ha.getState('sensor.weather_temperature_max') ?? '--');
                 {data.description}
               </div>
             </div>
-          </div>
+          </button>
         {/each}
       </div>
     {/if}
   </div>
 </div>
+
+<ForecastDialog day={selectedDay} onclose={() => (selectedDay = null)} />
