@@ -177,13 +177,11 @@
   const pollenLevelLabels = ['Keine', 'Niedrig', 'Mittel', 'Hoch', 'Sehr hoch'];
 
   let pollenHourlyLevel = $derived(
-    (pollenEntity?.attributes?.level as number) ?? (pollenForecast[0]?.level ?? 0)
+    (pollenEntity?.attributes?.level as number) ?? pollenForecast[0]?.level ?? 0
   );
   let pollenHourlyLevelStyle = $derived(getPollenLevelStyle(pollenHourlyLevel));
   let pollenHeroAccentColor = $derived(`var(${pollenHourlyLevelStyle.accentVar})`);
   let pollenHeroTextColor = $derived(pollenHourlyLevelStyle.textColor);
-
-
 </script>
 
 <WeatherCard showForecast />
@@ -194,7 +192,7 @@
       icon={Droplets}
       title="Niederschlag"
       accentColor="var(--accent-rain)"
-      hero={isRaining === 'on' ? `${actualRainRate}` : '--'}
+      hero={isRaining === 'on' ? `${actualRainRate}` : '0'}
       heroUnit={isRaining === 'on' ? 'mm/h' : 'Kein Regen'}
       stats={[
         { label: 'Tagesmenge', value: `${dailyRainRate} mm` },

@@ -56,39 +56,54 @@
   let todayHigh = $derived(ha.getState('sensor.weather_temperature_max') ?? '--');
   let todayLow = $derived(ha.getState('sensor.weather_temperature_min') ?? '--');
 
-  let forecast = $derived.by<ForecastDay[]>(() => {
+  function buildForecastDay(d: Record<string, unknown>): ForecastDay {
+    const condition = haConditionMap[d.condition as string] ?? haConditionMap['partlycloudy'];
+    const date = new Date(d.datetime as string);
+    const day = date.toLocaleDateString('de-DE', { weekday: 'short' }).toUpperCase().replace('.', '');
+    const fullDate = date.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
+    const isSunny = d.condition === 'sunny' || d.condition === 'clear-night';
+    const high = Math.round(d.temperature as number);
+    const bgOpacity = parseFloat((0.05 + Math.max(0, Math.min(35, high)) / 35 * 0.18).toFixed(3));
+    return {
+      day,
+      fullDate,
+      icon: condition.icon,
+      animation: isSunny ? 'animate-spin-slow' : '',
+      high,
+      low: Math.round(d.templow as number),
+      description: condition.label,
+      bgOpacity,
+      raw: d
+    };
+  }
+
+  let forecastRaw = $derived.by(() => {
     if (!showForecast) return [];
-    const raw = ha.getEntity('sensor.daily_weather_data_openweathermap')?.attributes
-      ?.forecast_data as Record<string, unknown>[] | undefined;
-    if (!raw?.length) return [];
-    return raw.slice(1, 6).map((d) => {
-      const condition = haConditionMap[d.condition as string] ?? haConditionMap['partlycloudy'];
-      const date = new Date(d.datetime as string);
-      const day = date.toLocaleDateString('de-DE', { weekday: 'short' }).toUpperCase().replace('.', '');
-      const fullDate = date.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
-      const isSunny = d.condition === 'sunny' || d.condition === 'clear-night';
-      const high = Math.round(d.temperature as number);
-      const bgOpacity = parseFloat((0.05 + Math.max(0, Math.min(35, high)) / 35 * 0.18).toFixed(3));
-      return {
-        day,
-        fullDate,
-        icon: condition.icon,
-        animation: isSunny ? 'animate-spin-slow' : '',
-        high,
-        low: Math.round(d.templow as number),
-        description: condition.label,
-        bgOpacity,
-        raw: d
-      };
-    });
+    return (ha.getEntity('sensor.daily_weather_data_openweathermap')?.attributes
+      ?.forecast_data as Record<string, unknown>[] | undefined) ?? [];
+  });
+
+  let todayForecast = $derived.by<ForecastDay | null>(() => {
+    if (!forecastRaw.length) return null;
+    return buildForecastDay(forecastRaw[0]);
+  });
+
+  let forecast = $derived.by<ForecastDay[]>(() => {
+    if (!forecastRaw.length) return [];
+    return forecastRaw.slice(1, 6).map(buildForecastDay);
   });
 
   let selectedDay = $state<ForecastDay | null>(null);
 </script>
 
-<div class="glass-panel-elevated rounded-2xl p-10">
+<div class="glass-panel-elevated overflow-hidden rounded-2xl p-10">
   <div class="flex items-center justify-between gap-10">
-    <div class="flex-1">
+    <button
+      class="flex-1 text-left outline-none focus-visible:outline-2 focus-visible:outline-white/40"
+      onclick={() => { navigator.vibrate?.(30); selectedDay = todayForecast; }}
+      aria-label="Details für heute"
+      style="touch-action: manipulation;"
+    >
       <div class="mb-8 flex items-end gap-6">
         {#if weatherCondition.icon}
           {@const ConditionIcon = weatherCondition.icon}
@@ -122,7 +137,7 @@
           </span>
         </span>
       </div>
-    </div>
+    </button>
 
     {#if forecast.length > 0}
       <div class="flex shrink-0 items-stretch gap-3">

@@ -9,7 +9,8 @@
     Sun,
     Plug,
     Gauge,
-    Thermometer
+    Thermometer,
+    Zap
   } from 'lucide-svelte';
   import type { Icon } from 'lucide-svelte';
 
@@ -17,31 +18,33 @@
     { label: 'Übersicht', href: '/overview', icon: LayoutDashboard },
     { label: 'Kameras', href: '/security', icon: Camera },
     { label: 'Wetter', href: '/weather', icon: CloudSun },
-    { label: 'Räume', href: '/rooms', icon: LayoutGrid }
+    { label: 'Räume', href: '/rooms', icon: LayoutGrid },
+    { label: 'Energie', href: '/energy', icon: Zap }
   ];
 
   let currentPath = $derived(page.url.pathname);
   let time = $derived(ha.getState('sensor.time') ?? '--');
 
-  let pvPower = $derived(ha.getNumericState('sensor.solaredge_solar_power', 2) ?? '--');
+  let pvPower = $derived(ha.getNumericState('sensor.power_solar_generation', 0) ?? '0');
   let pvToday = $derived.by(() => {
-    const v = ha.getNumericState('sensor.solaredge_produced_energy', 0);
-    return v !== null ? (parseFloat(v) / 1000).toFixed(2) : '--';
+    const v = ha.getNumericState('sensor.energy_solar_production_daily', 2);
+    return v !== null ? parseFloat(v).toFixed(2) : '--';
   });
 
   // Grid: positiv = Bezug vom Netz, negativ = Einspeisung
-  let gridPower = $derived(ha.getNumericState('sensor.solaredge_grid_power', 2) ?? '--');
+  let gridPower = $derived(ha.getNumericState('sensor.power_grid_load', 0) ?? '0');
   let gridImporting = $derived(
-    parseFloat(ha.getEntity('sensor.solaredge_grid_power')?.state ?? '1') > 0.05
+    parseFloat(ha.getEntity('sensor.power_grid_load')?.state ?? '1') > 0.05
   );
   let gridToday = $derived.by(() => {
-    const v = ha.getNumericState('sensor.solaredge_imported_energy', 0);
-    return v !== null ? (parseFloat(v) / 1000).toFixed(2) : '--';
+    const v = ha.getNumericState('sensor.energy_grid_imported_daily', 2);
+    return v !== null ? parseFloat(v).toFixed(2) : '--';
   });
 
-  let autarkie = $derived(
-    parseFloat(ha.getNumericState('sensor.ground_garage_power_self_sufficiency', 0) ?? '0')
-  );
+  let autarkie = $derived.by(() => {
+    const v = ha.getNumericState('sensor.energy_self_sufficiency_daily');
+    return v !== null ? parseFloat(v) : '--';
+  });
 
   // Warmwasser
   let warmwasser = $derived(
@@ -90,7 +93,7 @@
           </div>
           <div class="flex items-baseline gap-1">
             <span class="text-xs font-light text-white/45 tabular-nums">{pvPower}</span>
-            <span class="text-[10px] text-white/25">kW</span>
+            <span class="text-[10px] text-white/25">W</span>
           </div>
         </div>
       </div>
@@ -115,7 +118,7 @@
           </div>
           <div class="flex items-baseline gap-1">
             <span class="text-xs font-light text-white/45 tabular-nums">{gridPower}</span>
-            <span class="text-[10px] text-white/25">kW</span>
+            <span class="text-[10px] text-white/25">W</span>
           </div>
         </div>
       </div>
@@ -180,7 +183,7 @@
   <div class="h-px bg-linear-to-r from-transparent via-white/8 to-transparent"></div>
 
   <!-- Bottom row: Navigation -->
-  <nav class="mx-auto inline-grid grid-cols-4 gap-1 py-2">
+  <nav class="mx-auto inline-grid grid-cols-5 gap-1 py-2">
     {#each navItems as item (item.label)}
       {@const NavIcon = item.icon}
       {@const isActive = currentPath.startsWith(item.href)}
