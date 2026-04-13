@@ -145,23 +145,23 @@
           {@const ForecastIcon = data.icon}
           <button
             onclick={() => { navigator.vibrate?.(30); selectedDay = data; }}
-            class="forecast-card flex w-36 flex-col items-center justify-center gap-4 rounded-xl p-5 transition-opacity duration-150 ease-out active:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/40"
+            class="forecast-card flex w-28 flex-col items-center justify-center gap-3 rounded-xl p-3.5 transition-opacity duration-150 ease-out active:opacity-60 focus-visible:outline-2 focus-visible:outline-white/40"
             style="background: oklch(0.82 0.035 50 / {data.bgOpacity}); touch-action: manipulation;"
             aria-label="Details für {data.fullDate}"
           >
-            <div class="text-sm font-medium tracking-[0.18em] text-white/80 uppercase">
+            <div class="text-xs font-medium tracking-[0.18em] text-white/80 uppercase">
               {data.day}
             </div>
             <div class="{data.animation} text-white/75" style="animation-delay: {i * 400}ms">
-              <ForecastIcon size={40} strokeWidth={0.85} />
+              <ForecastIcon size={32} strokeWidth={0.85} />
             </div>
-            <div class="flex flex-col items-center gap-2 text-center">
-              <div class="text-base font-light text-white tabular-nums">
+            <div class="flex flex-col items-center gap-1.5 text-center">
+              <div class="text-sm font-light text-white tabular-nums">
                 <span class="font-extralight">{data.high}</span><span class="text-white/35">°</span>
                 <span class="text-white/30">/</span>
                 <span class="text-white/55">{data.low}°</span>
               </div>
-              <div class="text-sm font-light tracking-wider text-white/50">
+              <div class="text-xs font-light text-white/50">
                 {data.description}
               </div>
             </div>
